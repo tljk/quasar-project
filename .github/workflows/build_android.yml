@@ -44,15 +44,15 @@ jobs:
         run: chmod +x ./src-capacitor/android/gradlew & quasar build -m capacitor -T android
 
       - name: Sign Apk
-        uses: ilharp/sign-android-release@v1
+        uses: filippoLeporati93/android-release-signer@v1
         id: sign_app
         with:
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          releaseDir: ./src-capacitor/android/app/build/outputs/apk/release
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          releaseDirectory: ./src-capacitor/android/app/build/outputs/apk/release
 
       - uses: actions/upload-artifact@v4
         with:
-          path: ${{steps.sign_app.outputs.signedFile}}
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
           name: app-release.apk
