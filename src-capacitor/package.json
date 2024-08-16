@@ -1,0 +1,14 @@
+{
+  "name": "quasar-project",
+  "version": "0.0.1",
+  "description": "A Quasar Project",
+  "author": "tanglinchuanz@163.com <tanglinchuanz@163.com>",
+  "private": true,
+  "dependencies": {
+    "@aparajita/capacitor-dark-mode": "^5.0.2",
+    "@capacitor/android": "^6.1.1",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

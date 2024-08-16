@@ -1,0 +1,58 @@
+name: Quasar Android CI CD
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    permissions:
+      id-token: write
+      contents: read
+      pages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "adopt"
+
+      - name: Install dependencies
+        run: npm install & npm install -g @quasar/cli
+
+      - name: Install dependencies for Capacitor
+        working-directory: ./src-capacitor
+        run: npm install
+
+      - name: Build
+        run: chmod +x ./src-capacitor/android/gradlew & quasar build -m capacitor -T android
+
+      - name: Sign Apk
+        uses: ilharp/sign-android-release@v1
+        id: sign_app
+        with:
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          releaseDir: ./src-capacitor/android/app/build/outputs/apk/release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{steps.sign_app.outputs.signedFile}}
+          name: app-release.apk

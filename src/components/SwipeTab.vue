@@ -1,0 +1,106 @@
+<template>
+  <div
+    v-if="!props.vertical"
+    class="overflow-hidden"
+    v-touch-pan.horizontal.prevent.mouse="handlePan"
+  >
+    <div ref="swipeContainer" class="flex row no-wrap" :style="style">
+      <slot></slot>
+    </div>
+    <q-resize-observer @resize="onResize" />
+  </div>
+  <div
+    v-else
+    class="overflow-hidden"
+    v-touch-pan.vertical.prevent.mouse="handlePan"
+  >
+    <div ref="swipeContainer" class="flex column no-wrap" :style="style">
+      <slot></slot>
+    </div>
+    <q-resize-observer @resize="onResize" />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from "vue";
+
+const props = defineProps({
+  vertical: { type: Boolean, default: false },
+  distanceThreshold: { type: Number, default: 0.6 },
+  velocityThreshold: { type: Number, default: 0.3 },
+});
+const index = defineModel({ default: 0 });
+const swipeContainer = ref();
+
+const width = ref(0);
+const height = ref(0);
+const offset = ref(0);
+const delay = ref(0);
+
+const distance = computed(() => -index.value * length.value);
+const length = computed(() => (props.vertical ? height.value : width.value));
+const fullLength = computed(() => {
+  return length.value * swipeContainer.value?.children.length ?? 1;
+});
+const style = computed(() => {
+  return props.vertical
+    ? {
+        height: `${fullLength.value}px`,
+        width: `${width.value}px`,
+        transform: `translate(0, ${offset.value}px)`,
+        transition: `transform ${delay.value}s`,
+      }
+    : {
+        height: `${height.value}px`,
+        width: `${fullLength.value}px`,
+        transform: `translate(${offset.value}px, 0)`,
+        transition: `transform ${delay.value}s`,
+      };
+});
+
+function handlePan({ evt, ...newInfo }) {
+  if (newInfo.isFirst) {
+    delay.value = 0;
+  }
+
+  const tempOffset = props.vertical ? newInfo.offset.y : newInfo.offset.x;
+  const temp = distance.value + tempOffset;
+  if (temp >= 0) {
+    offset.value = 0;
+  } else if (temp <= -fullLength.value + length.value) {
+    offset.value = -fullLength.value + length.value;
+  } else {
+    offset.value = temp;
+  }
+
+  if (newInfo.isFinal) {
+    delay.value = 0.3;
+    const velocity = tempOffset / newInfo.duration;
+    if (
+      velocity > props.velocityThreshold ||
+      tempOffset > length.value * props.distanceThreshold
+    ) {
+      // swipe left
+      index.value = -Math.ceil(offset.value / length.value);
+    } else if (
+      velocity < -props.velocityThreshold ||
+      tempOffset < -length.value * props.distanceThreshold
+    ) {
+      // swipe right
+      index.value = -Math.floor(offset.value / length.value);
+    }
+    offset.value = distance.value;
+  }
+}
+
+function onResize(size) {
+  width.value = size.width;
+  height.value = size.height;
+  delay.value = 0;
+  offset.value = distance.value;
+}
+
+onMounted(() => {});
+</script>
+
+<style lang="scss" scoped></style>
