@@ -9,6 +9,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
+import { getLatestBundle } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 
@@ -23,15 +24,40 @@ const backgroundColor = computed(() =>
 );
 
 onMounted(async () => {
-  await LiveUpdate.ready();
-
-  $q.dark.set(await (await DarkMode.isDarkMode()).dark);
   document.body.style.setProperty("--q-dark-page", backgroundColor.value);
+  $q.dark.set(await (await DarkMode.isDarkMode()).dark);
   appearanceListenerHandle.value = await DarkMode.addAppearanceListener(
     (value) => {
       $q.dark.set(value.dark);
       document.body.style.setProperty("--q-dark-page", backgroundColor.value);
     }
   );
+
+  if ($q.platform.is.capacitor) {
+    await LiveUpdate.ready();
+
+    const { changeLog, bundleId, bundleUrl } = await getLatestBundle().catch(
+      (error) => {
+        $q.notify({
+          message: `Error getting latest bundle: ${error.message}`,
+        });
+      }
+    );
+    const currentBundleId = (await LiveUpdate.getBundle()).bundleId;
+    if (bundleId && currentBundleId != bundleId) {
+      await LiveUpdate.downloadBundle({
+        url: bundleUrl,
+        bundleId: bundleId,
+      })
+        .then(async () => {
+          await LiveUpdate.setBundle({ bundleId: bundleId });
+        })
+        .catch((error) => {
+          $q.notify({
+            message: `Error downloading bundle: ${error.message}`,
+          });
+        });
+    }
+  }
 });
 </script>

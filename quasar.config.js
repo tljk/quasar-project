@@ -58,7 +58,10 @@ module.exports = configure(function (/* ctx */) {
 
       publicPath: "/quasar-project",
       // analyze: true,
-      // env: {},
+      env: {
+        QUASAR_PROJECT_GITHUB_API:
+          "https://api.github.com/repos/tljk/quasar-project/",
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
