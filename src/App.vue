@@ -10,6 +10,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
+import { LiveUpdate } from "@capawesome/capacitor-live-update";
 
 const $q = useQuasar();
 const appearanceListenerHandle = ref(null);
@@ -22,6 +23,8 @@ const backgroundColor = computed(() =>
 );
 
 onMounted(async () => {
+  await LiveUpdate.ready();
+
   $q.dark.set(await (await DarkMode.isDarkMode()).dark);
   document.body.style.setProperty("--q-dark-page", backgroundColor.value);
   appearanceListenerHandle.value = await DarkMode.addAppearanceListener(
