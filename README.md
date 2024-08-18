@@ -45,3 +45,10 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+
+### Update version code
+
+```bash
+cd src-capacitor && npm version patch & cd .. & git add . & npm version patch --force & git p
+ush & git push --tags
+```
