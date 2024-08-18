@@ -1,4 +1,4 @@
-name: Quasar Android CI CD
+name: Build Android
 
 on:
   push:
