@@ -41,10 +41,10 @@ jobs:
           java-version: "17"
           distribution: "adopt"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install & npm install -g @quasar/cli
 
-      - name: Install dependencies for Capacitor
+      - name: Install Dependencies for Capacitor
         working-directory: ./src-capacitor
         run: npm install
 
