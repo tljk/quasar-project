@@ -24,8 +24,8 @@ const backgroundColor = computed(() =>
 );
 
 onMounted(async () => {
-  document.body.style.setProperty("--q-dark-page", backgroundColor.value);
   $q.dark.set(await (await DarkMode.isDarkMode()).dark);
+  document.body.style.setProperty("--q-dark-page", backgroundColor.value);
   appearanceListenerHandle.value = await DarkMode.addAppearanceListener(
     (value) => {
       $q.dark.set(value.dark);
