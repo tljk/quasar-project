@@ -4,18 +4,16 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - ".github/**"
-      - ".vscode/**"
-      - "README.md"
+    paths:
+      - "src/**"
+      - "src-capacitor/android/**"
 
   pull_request:
     branches:
       - master
-    paths-ignore:
-      - ".github/**"
-      - ".vscode/**"
-      - "README.md"
+    paths:
+      - "src/**"
+      - "src-capacitor/android/**"
 
 jobs:
   build:
