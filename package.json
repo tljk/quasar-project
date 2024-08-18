@@ -1,6 +1,6 @@
 {
   "name": "quasar-project",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Quasar Project",
   "productName": "Quasar App",
   "author": "tanglinchuanz@163.com <tanglinchuanz@163.com>",
@@ -10,7 +10,10 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
+    "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
+    "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json"
   },
   "dependencies": {
     "@aparajita/capacitor-dark-mode": "^5.0.2",

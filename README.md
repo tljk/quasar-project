@@ -49,6 +49,7 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 ### Update version code
 
 ```bash
-cd src-capacitor && npm version patch & cd .. & git add . & npm version patch --force & git p
-ush & git push --tags
+npm run patch
+npm run minor
+npm run major
 ```
