@@ -1,21 +1,9 @@
-name: Quasar Android CI CD
+name: Create Release
 
 on:
   push:
-    branches:
-      - master
-    paths-ignore:
-      - ".github/**"
-      - ".vscode/**"
-      - "README.md"
-
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - ".github/**"
-      - ".vscode/**"
-      - "README.md"
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
@@ -23,7 +11,7 @@ jobs:
 
     permissions:
       id-token: write
-      contents: read
+      contents: write
       pages: write
 
     steps:
@@ -41,10 +29,10 @@ jobs:
           java-version: "17"
           distribution: "adopt"
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install & npm install -g @quasar/cli
 
-      - name: Install Dependencies for Capacitor
+      - name: Install dependencies for Capacitor
         working-directory: ./src-capacitor
         run: npm install
 
@@ -60,8 +48,23 @@ jobs:
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           releaseDirectory: ./src-capacitor/android/app/build/outputs/apk/release
 
+      - name: Create Bundle
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          path: ./src-capacitor/www
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
           name: app-release.apk
+
+      - run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app-release.apk
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            release.zip
+            app-release.apk
