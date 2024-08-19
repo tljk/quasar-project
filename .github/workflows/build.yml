@@ -34,7 +34,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm install & npm install -g @quasar/cli & quasar mode add pwa
+        run: npm install & npm install -g @quasar/cli
 
       - name: Build
         run: npm run build -m pwa
