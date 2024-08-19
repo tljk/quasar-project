@@ -7,6 +7,15 @@
       <q-card-section v-if="currentBundleId">
         Current bundle: {{ currentBundleId }}
       </q-card-section>
+      <q-card-section v-if="device">
+        Current device: {{ device }}
+      </q-card-section>
+      <q-card-section v-if="quasarMode">
+        Current mode: {{ quasarMode }}
+      </q-card-section>
+      <q-card-section v-if="environment">
+        Current environment: {{ environment }}
+      </q-card-section>
 
       <q-card-actions>
         <q-btn label="Check update" @click="onClick"></q-btn>
@@ -24,6 +33,9 @@ const $q = useQuasar();
 
 const version = ref();
 const currentBundleId = ref();
+const device = ref();
+const quasarMode = ref();
+const environment = ref();
 
 async function onClick() {
   await LiveUpdate.reload();
@@ -31,6 +43,9 @@ async function onClick() {
 
 onMounted(async () => {
   version.value = process.env.APP_VERSION;
+  quasarMode.value = process.env.MODE;
+  environment.value = process.env.NODE_ENV;
+  device.value = $q.platform.is.capacitor ? "android" : "Web";
   if ($q.platform.is.capacitor) {
     currentBundleId.value = (await LiveUpdate.getBundle()).bundleId;
   }
