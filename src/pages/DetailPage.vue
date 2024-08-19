@@ -2,6 +2,7 @@
   <q-page class="fixed-full dark-mode">
     <q-btn label="Go to Home" to="/home" />
     <q-btn label="Go to Detail" @click="onClick" />
+    <q-btn label="About" to="/about" />
   </q-page>
 </template>
 

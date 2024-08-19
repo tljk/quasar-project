@@ -1,9 +1,7 @@
 import axios from "axios";
 
 export async function getLatestBundle() {
-  const res = await axios.get(
-    process.env.QUASAR_PROJECT_GITHUB_API + "releases/latest"
-  );
+  const res = await axios.get(process.env.GITHUB_API + "releases/latest");
   if (res.status !== 200) {
     throw new Error("Failed to fetch latest bundle");
   }

@@ -10,6 +10,7 @@
 
 const { configure } = require("quasar/wrappers");
 const path = require("path");
+const { version } = require("./package.json");
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -59,8 +60,8 @@ module.exports = configure(function (/* ctx */) {
       publicPath: "/quasar-project",
       // analyze: true,
       env: {
-        QUASAR_PROJECT_GITHUB_API:
-          "https://api.github.com/repos/tljk/quasar-project/",
+        APP_VERSION: version,
+        GITHUB_API: "https://api.github.com/repos/tljk/quasar-project/",
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
