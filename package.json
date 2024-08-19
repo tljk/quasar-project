@@ -11,6 +11,8 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
+    "pwa": "quasar build -m pwa",
+    "android": "quasar build -m capacitor -T android --ide",
     "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
     "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
     "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json"

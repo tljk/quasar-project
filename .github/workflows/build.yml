@@ -39,7 +39,7 @@ jobs:
         run: npm install & npm install -g @quasar/cli
 
       - name: Build
-        run: npm run build -m pwa
+        run: npm run pwa
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
