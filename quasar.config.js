@@ -70,13 +70,7 @@ module.exports = configure(function (/* ctx */) {
       // distDir
 
       // extendViteConf (viteConf) {},
-      viteVuePluginOptions: {
-        template: {
-          compilerOptions: {
-            isCustomElement: (tag) => tag.includes(""),
-          },
-        },
-      },
+      // viteVuePluginOptions: {},
 
       vitePlugins: [
         [
