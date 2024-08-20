@@ -11,6 +11,7 @@
 const { configure } = require("quasar/wrappers");
 const path = require("path");
 const { version } = require("./package.json");
+const captureModuleCode = require("./source_hash");
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -96,6 +97,7 @@ module.exports = configure(function (/* ctx */) {
           },
           { server: false },
         ],
+        captureModuleCode(),
       ],
     },
 
