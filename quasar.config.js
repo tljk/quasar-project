@@ -65,7 +65,7 @@ module.exports = configure(function (/* ctx */) {
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
-      // minify: false,
+      minify: "terser",
       // polyfillModulePreload: true,
       // distDir
 
@@ -73,7 +73,7 @@ module.exports = configure(function (/* ctx */) {
       viteVuePluginOptions: {
         template: {
           compilerOptions: {
-            isCustomElement: (tag) => tag.includes("swiper"),
+            isCustomElement: (tag) => tag.includes(""),
           },
         },
       },
