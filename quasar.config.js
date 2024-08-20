@@ -11,7 +11,6 @@
 const { configure } = require("quasar/wrappers");
 const path = require("path");
 const { version } = require("./package.json");
-const captureModuleCode = require("./capture_module");
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -74,7 +73,6 @@ module.exports = configure(function (/* ctx */) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        captureModuleCode(),
         [
           "@intlify/vite-plugin-vue-i18n",
           {
