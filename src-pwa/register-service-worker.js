@@ -1,4 +1,5 @@
 import { register } from "register-service-worker";
+import { useAppStore } from "src/stores/appStore";
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -12,32 +13,37 @@ register(process.env.SERVICE_WORKER_FILE, {
   // registrationOptions: { scope: './' },
 
   ready(/* registration */) {
-    console.log("Service worker is active.");
+    const appStore = useAppStore();
+    appStore.setServiceWorker("ready", "true");
   },
 
   registered(/* registration */) {
-    console.log("Service worker has been registered.");
+    const appStore = useAppStore();
+    appStore.setServiceWorker("registered", "true");
   },
 
   cached(/* registration */) {
-    console.log("Content has been cached for offline use.");
+    const appStore = useAppStore();
+    appStore.setServiceWorker("cached", "true");
   },
 
   updatefound(/* registration */) {
-    console.log("New content is downloading.");
+    const appStore = useAppStore();
+    appStore.setServiceWorker("updatefound", "true");
   },
 
   updated(/* registration */) {
-    console.log("New content is available; please refresh.");
+    const appStore = useAppStore();
+    appStore.setServiceWorker("updated", "true");
   },
 
   offline() {
-    console.log(
-      "No internet connection found. App is running in offline mode."
-    );
+    const appStore = useAppStore();
+    appStore.setServiceWorker("offline", "true");
   },
 
   error(/* err */) {
-    console.error("Error during service worker registration:", err);
+    const appStore = useAppStore();
+    appStore.setServiceWorker("error", err);
   },
 });

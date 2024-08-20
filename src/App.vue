@@ -9,11 +9,13 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
+import { useAppStore } from "@/stores/appStore";
 import { getLatestBundle } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 
 const $q = useQuasar();
+const appStore = useAppStore();
 const appearanceListenerHandle = ref(null);
 
 const lightBackground = "#ffffff";
@@ -44,6 +46,7 @@ onMounted(async () => {
       }
     );
     const currentBundleId = (await LiveUpdate.getBundle()).bundleId;
+    appStore.setBundleId(currentBundleId);
     if (bundleId && currentBundleId != bundleId) {
       await LiveUpdate.downloadBundle({
         url: bundleUrl,
