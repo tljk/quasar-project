@@ -38,6 +38,9 @@ onMounted(async () => {
   if ($q.platform.is.capacitor) {
     await LiveUpdate.ready();
 
+    const currentBundleId = (await LiveUpdate.getBundle()).bundleId;
+    appStore.setCurrentBundleId(currentBundleId);
+
     const { changeLog, bundleId, bundleUrl } = await getLatestBundle().catch(
       (error) => {
         $q.notify({
@@ -45,8 +48,7 @@ onMounted(async () => {
         });
       }
     );
-    const currentBundleId = (await LiveUpdate.getBundle()).bundleId;
-    appStore.setBundleId(currentBundleId);
+
     if (bundleId && currentBundleId != bundleId) {
       await LiveUpdate.downloadBundle({
         url: bundleUrl,
