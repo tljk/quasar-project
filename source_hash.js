@@ -1,4 +1,6 @@
 const { createHash } = require("crypto");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = function captureModuleCode() {
   const moduleCodeMap = new Map();
@@ -8,13 +10,11 @@ module.exports = function captureModuleCode() {
     name: "capture-module-code",
     transform(code, id) {
       moduleCodeMap.set(id, code);
-      return null;
     },
     generateBundle(options, bundle) {
       for (const [key, value] of Object.entries(bundle)) {
         if (value.type === "chunk") {
-          const { modules } = value;
-          const moduleCodes = Object.keys(modules)
+          const moduleCodes = Object.keys(value.modules)
             .map((id) => moduleCodeMap.get(id))
             .join("");
           const hash = createHash("md5")
@@ -23,27 +23,33 @@ module.exports = function captureModuleCode() {
             .substr(0, 8);
           const newFileName = `${value.fileName.split(".")[0]}.${hash}.js`;
           chunkFileNamesMap.set(value.fileName, newFileName);
-          value.fileName = newFileName;
         }
-
-        for (const [key, value] of Object.entries(bundle)) {
-          if (value.type === "chunk") {
-            let { code } = value;
-            for (let [
-              oldFileName,
-              newFileName,
-            ] of chunkFileNamesMap.entries()) {
-              if (oldFileName) {
-                oldFileName = oldFileName.split("/").pop();
-              }
-              if (newFileName) {
-                newFileName = newFileName.split("/").pop();
-              }
-              const regex = new RegExp(oldFileName, "g");
-              code = code.replace(regex, newFileName);
-            }
-            value.code = code;
+      }
+    },
+    writeBundle(options, bundle) {
+      for (const [key, value] of Object.entries(bundle)) {
+        if (value.type === "chunk") {
+          const filePath = path.join(options.dir, value.fileName);
+          const newFileName = chunkFileNamesMap.get(value.fileName);
+          for (let [oldFileName, newFileName] of chunkFileNamesMap.entries()) {
+            value.code = value.code.replaceAll(
+              oldFileName.split("/")[1],
+              newFileName.split("/")[1]
+            );
           }
+          fs.writeFileSync(filePath, value.code);
+          fs.renameSync(filePath, path.join(options.dir, newFileName));
+        }
+        if (value.fileName === "index.html") {
+          const filePath = path.join(options.dir, value.fileName);
+          let html = fs.readFileSync(filePath, "utf-8");
+          for (let [oldFileName, newFileName] of chunkFileNamesMap.entries()) {
+            html = html.replaceAll(
+              oldFileName.split("/")[1],
+              newFileName.split("/")[1]
+            );
+          }
+          fs.writeFileSync(filePath, html);
         }
       }
     },
