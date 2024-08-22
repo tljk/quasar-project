@@ -10,14 +10,16 @@
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { useAppStore } from "@/stores/appStore";
-import { getLatestBundle } from "./useBundle.js";
+import { getLatestBundle, checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { Network } from "@capacitor/network";
 
 const $q = useQuasar();
 const appStore = useAppStore();
-const appearanceListenerHandle = ref(null);
+const appearanceListenerHandle = ref();
+const networkListenerHandle = ref();
 
 const lightBackground = "#ffffff";
 const darkBackground = "#121212";
@@ -40,31 +42,18 @@ onMounted(async () => {
     await SplashScreen.hide();
     await LiveUpdate.ready();
 
-    const currentBundleId = (await LiveUpdate.getBundle()).bundleId;
-    appStore.setCurrentBundleId(currentBundleId);
+    appStore.setCurrentBundleId((await LiveUpdate.getBundle()).bundleId);
+    appStore.setNetworkStatus(await Network.getStatus());
 
-    const { changeLog, bundleId, bundleUrl } = await getLatestBundle().catch(
-      (error) => {
-        $q.notify({
-          message: `Error getting latest bundle: ${error.message}`,
-        });
+    networkListenerHandle.value = Network.addListener(
+      "networkStatusChange",
+      (status) => {
+        appStore.setNetworkStatus(status);
+        checkForUpdates(appStore.networkStatus?.connectionType == "wifi");
       }
     );
 
-    if (bundleId && currentBundleId != bundleId) {
-      await LiveUpdate.downloadBundle({
-        url: bundleUrl,
-        bundleId: bundleId,
-      })
-        .then(async () => {
-          await LiveUpdate.setBundle({ bundleId: bundleId });
-        })
-        .catch((error) => {
-          $q.notify({
-            message: `Error downloading bundle: ${error.message}`,
-          });
-        });
-    }
+    checkForUpdates(appStore.networkStatus?.connectionType == "wifi");
   }
 });
 </script>

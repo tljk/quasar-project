@@ -6,9 +6,12 @@ export const useAppStore = defineStore("app", {
     version: process.env.APP_VERSION,
     quasarMode: process.env.MODE,
     environment: process.env.NODE_ENV,
-    currentBundleId: undefined,
     device: Platform.is,
-    serviceWorker: {},
+
+    currentBundleId: undefined,
+    latestBundle: undefined,
+    serviceWorker: undefined,
+    networkStatus: undefined,
   }),
   getters: {
     getVersion() {
@@ -23,16 +26,32 @@ export const useAppStore = defineStore("app", {
     getCurrentBundleId() {
       return this.currentBundleId;
     },
+    getLatestBundle() {
+      return this.latestBundle;
+    },
     getDevice() {
       return this.device;
+    },
+    getServiceWorker() {
+      return this.serviceWorker;
+    },
+    getNetworkStatus() {
+      return this.networkStatus;
     },
   },
   actions: {
     setCurrentBundleId(bundleId) {
       this.currentBundleId = bundleId;
     },
+    setLatestBundle(value) {
+      this.latestBundle = value;
+    },
     setServiceWorker(key, value) {
+      this.serviceWorker = this.serviceWorker ?? {};
       this.serviceWorker[key] = value;
+    },
+    setNetworkStatus(value) {
+      this.networkStatus = value;
     },
   },
 });
