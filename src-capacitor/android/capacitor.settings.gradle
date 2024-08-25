@@ -19,3 +19,6 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 
 include ':capawesome-capacitor-live-update'
 project(':capawesome-capacitor-live-update').projectDir = new File('../node_modules/@capawesome/capacitor-live-update/android')
+
+include ':ln-capacitor-wifi'
+project(':ln-capacitor-wifi').projectDir = new File('../node_modules/ln-capacitor-wifi/android')
