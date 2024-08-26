@@ -15,6 +15,10 @@ const routes = [
         path: "/about",
         component: () => import("pages/AboutPage.vue"),
       },
+      {
+        path: "/wifi-scan",
+        component: () => import("pages/WifiScanPage.vue"),
+      },
     ],
   },
 
