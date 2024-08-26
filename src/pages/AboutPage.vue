@@ -8,7 +8,7 @@
         Current bundle: {{ appStore.currentBundleId }}
       </q-card-section>
       <q-card-section v-if="appStore.latestBundle">
-        Current bundle: {{ appStore.latestBundle }}
+        Latest bundle: {{ appStore.latestBundle }}
       </q-card-section>
       <q-card-section v-if="appStore.quasarMode">
         Current mode: {{ appStore.quasarMode }}

@@ -10,7 +10,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { useAppStore } from "@/stores/appStore";
-import { getLatestBundle, checkForUpdates } from "./useBundle.js";
+import { checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { SplashScreen } from "@capacitor/splash-screen";

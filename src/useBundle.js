@@ -4,7 +4,7 @@ import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { useAppStore } from "src/stores/appStore";
 
 export async function getLatestBundle() {
-  await axios
+  return await axios
     .get(process.env.GITHUB_API + "releases/latest")
     .then((res) => {
       const changeLog = res.data.body;
@@ -23,7 +23,7 @@ export async function getLatestBundle() {
 
 export async function downloadBundle() {
   const appStore = useAppStore();
-  const { bundleId, bundleUrl } = appStore.getLatestBundle();
+  const { bundleId, bundleUrl } = appStore.latestBundle;
   await LiveUpdate.downloadBundle({
     url: bundleUrl,
     bundleId: bundleId,
