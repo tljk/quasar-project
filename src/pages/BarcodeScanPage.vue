@@ -22,11 +22,10 @@ const appStore = useAppStore();
 
 const scanResult = ref([]);
 const scanOptions = ref({
-  hint: "ALL",
+  hint: 17,
   scanInstructions: "Please scan a barcode or QRcode",
   scanButton: false,
   scanText: "Scan",
-  cameraDirection: 1,
   scanOrientation: 3,
 });
 
