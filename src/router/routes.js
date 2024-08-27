@@ -19,6 +19,10 @@ const routes = [
         path: "/wifi-scan",
         component: () => import("pages/WifiScanPage.vue"),
       },
+      {
+        path: "/barcode-scan",
+        component: () => import("pages/BarcodeScanPage.vue"),
+      },
     ],
   },
 

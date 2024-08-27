@@ -6,3 +6,13 @@
 .dark-mode {
   background: var(--q-dark-page);
 }
+
+.scanner-dialog {
+  z-index: 50000 !important;
+}
+
+.q-notifications {
+  .q-notifications__list {
+    z-index: 50000 !important;
+  }
+}

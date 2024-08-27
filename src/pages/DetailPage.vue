@@ -5,6 +5,7 @@
     <q-btn label="About" to="/about" />
     <q-btn label="Go to wifi scan" to="/wifi-scan" />
     <q-btn label="Redirect" @click="onRedirect" />
+    <q-btn label="Go to Barcode Scan" to="/barcode-scan" />
   </q-page>
 </template>
 
