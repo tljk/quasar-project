@@ -27,9 +27,6 @@ const scanOptions = ref({
   scanButton: false,
   scanText: "Scan",
   scanOrientation: 3,
-  android: {
-    scanningLibrary: "mlkit",
-  },
 });
 
 async function scanBarcode() {
