@@ -26,6 +26,7 @@ const scanOptions = ref({
   scanInstructions: "Please scan a barcode or QRcode",
   scanButton: false,
   scanText: "Scan",
+  cameraDirection: 2,
   scanOrientation: 3,
 });
 
