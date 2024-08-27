@@ -23,6 +23,10 @@ const routes = [
         path: "/barcode-scan",
         component: () => import("pages/BarcodeScanPage.vue"),
       },
+      {
+        path: "/geolocation",
+        component: () => import("pages/GeolocationPage.vue"),
+      },
     ],
   },
 

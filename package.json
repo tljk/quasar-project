@@ -10,9 +10,11 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
+    "dev:pwa": "quasar dev -m pwa",
+    "dev:android": "quasar dev -m capacitor -T android",
     "build": "quasar build",
-    "pwa": "quasar build -m pwa",
-    "android": "quasar build -m capacitor -T android --ide",
+    "build:pwa": "quasar build -m pwa",
+    "build:android": "quasar build -m capacitor -T android --ide",
     "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
     "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
     "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json"
@@ -20,6 +22,7 @@
   "dependencies": {
     "@aparajita/capacitor-dark-mode": "^5.0.2",
     "@capacitor/barcode-scanner": "^1.0.1",
+    "@capacitor/geolocation": "^6.0.1",
     "@capacitor/inappbrowser": "^1.0.0",
     "@capacitor/network": "^6.0.2",
     "@capacitor/splash-screen": "^6.0.2",
