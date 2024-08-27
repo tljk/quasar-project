@@ -38,12 +38,13 @@ onMounted(async () => {
     }
   );
 
+  appStore.setNetworkStatus(await Network.getStatus());
+
   if ($q.platform.is.capacitor) {
     await SplashScreen.hide();
     await LiveUpdate.ready();
 
     appStore.setCurrentBundleId((await LiveUpdate.getBundle()).bundleId);
-    appStore.setNetworkStatus(await Network.getStatus());
 
     networkListenerHandle.value = Network.addListener(
       "networkStatusChange",
@@ -54,6 +55,13 @@ onMounted(async () => {
     );
 
     checkForUpdates(appStore.networkStatus?.connectionType == "wifi");
+  } else {
+    networkListenerHandle.value = Network.addListener(
+      "networkStatusChange",
+      (status) => {
+        appStore.setNetworkStatus(status);
+      }
+    );
   }
 });
 </script>
