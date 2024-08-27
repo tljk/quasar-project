@@ -30,9 +30,6 @@ const scanOptions = ref({
   android: {
     scanningLibrary: "mlkit",
   },
-  web: {
-    showCameraSelection: true,
-  },
 });
 
 async function scanBarcode() {
