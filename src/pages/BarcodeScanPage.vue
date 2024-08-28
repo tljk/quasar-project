@@ -1,5 +1,7 @@
 <template>
-  <q-page class="fixed-full dark-mode">
+  <q-page
+    class="fixed-full dark-mode q-pa-md q-gutter-y-sm scroll hide-scrollbar"
+  >
     <q-card v-for="(item, key) of scanResult" :key="key">
       <q-card-section v-if="scanResult">
         {{ item }}

@@ -8,6 +8,7 @@
     "@aparajita/capacitor-dark-mode": "^5.0.2",
     "@capacitor/android": "^6.1.1",
     "@capacitor/app": "^6.0.0",
+    "@capacitor/app-launcher": "^6.0.2",
     "@capacitor/barcode-scanner": "^1.0.1",
     "@capacitor/camera": "^6.0.2",
     "@capacitor/cli": "^6.0.0",

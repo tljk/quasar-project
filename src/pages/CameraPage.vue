@@ -1,5 +1,7 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll">
+  <q-page
+    class="fixed-full dark-mode q-pa-md q-gutter-y-sm scroll hide-scrollbar"
+  >
     <q-img
       v-if="imageDataUrl"
       :src="imageDataUrl"
