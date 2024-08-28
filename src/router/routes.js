@@ -27,6 +27,10 @@ const routes = [
         path: "/geolocation",
         component: () => import("pages/GeolocationPage.vue"),
       },
+      {
+        path: "/camera",
+        component: () => import("pages/CameraPage.vue"),
+      },
     ],
   },
 
