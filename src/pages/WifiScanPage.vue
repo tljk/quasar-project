@@ -3,9 +3,11 @@
     class="fixed-full dark-mode q-pa-md q-gutter-y-sm scroll hide-scrollbar"
   >
     <q-pull-to-refresh @refresh="refresh" class="full">
-      <q-card v-for="(item, key) of wifiList" :key="key">
-        <q-card-section> {{ item }} </q-card-section>
-      </q-card>
+      <div class="q-gutter-y-sm">
+        <q-card v-for="(item, key) of wifiList" :key="key">
+          <q-card-section> {{ item }} </q-card-section>
+        </q-card>
+      </div>
     </q-pull-to-refresh>
   </q-page>
 </template>

@@ -35,12 +35,8 @@
 <script setup>
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {
-  InAppBrowser,
-  DefaultWebViewOptions,
-  DefaultSystemBrowserOptions,
-} from "@capacitor/inappbrowser";
 import { AppLauncher } from "@capacitor/app-launcher";
+import { InAppBrowser } from "@capgo/inappbrowser";
 import { useQuasar } from "quasar";
 import { useAppStore } from "@/stores/appStore";
 
@@ -56,45 +52,27 @@ function onClick() {
   router.push("/detail/" + (Number(route.params.id) + 1));
 }
 
-async function toSpeedTest() {
+function toSpeedTest() {
   const URLScheme = "https://speedtest.net";
   if (appStore.device.capacitor) {
-    await InAppBrowser.openInSystemBrowser({
-      url: URLScheme,
-      options: DefaultSystemBrowserOptions,
-    }).catch(async () => {
-      await InAppBrowser.openInWebView({
-        url: URLScheme,
-        options: DefaultWebViewOptions,
-      });
-    });
+    InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
   } else {
     window.open(URLScheme, "_blank");
   }
 }
 
-async function toGoogleMap() {
+function toGoogleMap() {
   const URLScheme = `https://www.google.com/maps/dir/?api=1&destination=${latitude.value},${longitude.value}`;
   if (appStore.device.capacitor) {
-    await AppLauncher.canOpenUrl({
+    AppLauncher.canOpenUrl({
       url: "com.google.android.apps.maps",
     }).then(async (res) => {
       if (res.value) {
-        await AppLauncher.openUrl({
+        AppLauncher.openUrl({
           url: URLScheme,
-        }).then(async (res) => {
-          if (!res.completed) {
-            await InAppBrowser.openInWebView({
-              url: URLScheme,
-              options: DefaultWebViewOptions,
-            });
-          }
         });
       } else {
-        await InAppBrowser.openInWebView({
-          url: URLScheme,
-          options: DefaultWebViewOptions,
-        });
+        InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
       }
     });
   } else {
