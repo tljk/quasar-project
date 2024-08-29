@@ -23,12 +23,11 @@ const $q = useQuasar();
 const geolocationResult = ref([]);
 const geolocationOptions = ref({
   enableHighAccuracy: true,
-  timeout: 10000,
+  timeout: 30000,
   maximumAge: 0,
 });
 
 async function getGeolocation() {
-  $q.loading.show();
   await Geolocation.getCurrentPosition(geolocationOptions.value)
     .then((result) => {
       geolocationResult.value.push(result);
@@ -38,6 +37,5 @@ async function getGeolocation() {
         message: `Error getting geolocation: ${error.message}`,
       });
     });
-  $q.loading.hide();
 }
 </script>
