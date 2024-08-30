@@ -10,6 +10,7 @@
     <q-btn label="Go to geolocation" to="/geolocation" />
     <q-btn label="Go to camera" to="/camera" />
     <q-btn label="Redirect to speed test" @click="toSpeedTest" />
+    Speed {{ url.split("=")[1] }}
     <q-btn-dropdown
       label="Redirect to google map"
       split
@@ -33,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { AppLauncher } from "@capacitor/app-launcher";
 import { InAppBrowser } from "@capgo/inappbrowser";
@@ -47,15 +48,27 @@ const appStore = useAppStore();
 
 const latitude = ref(37);
 const longitude = ref(-122);
+const url = ref("");
 
 function onClick() {
   router.push("/detail/" + (Number(route.params.id) + 1));
 }
 
-function toSpeedTest() {
+async function toSpeedTest() {
   const URLScheme = "https://speedtest.net";
   if (appStore.device.capacitor) {
-    InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
+    await InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await InAppBrowser.executeScript({
+      code: `
+        new MutationObserver((_, obs) => {
+          const download = document.querySelector(".download-speed").textContent;
+          if (download && download != "000" && download != "—") {
+            window.location.href="https://www.speedtest.net/#/download="+download;
+          }
+        }).observe(document, { childList: true, subtree: true });
+      `,
+    });
   } else {
     window.open(URLScheme, "_blank");
   }
@@ -79,4 +92,12 @@ function toGoogleMap() {
     window.open(URLScheme, "_blank");
   }
 }
+
+onMounted(() => {
+  if (appStore.device.capacitor) {
+    InAppBrowser.addListener("urlChangeEvent", (event) => {
+      url.value = event.url;
+    });
+  }
+});
 </script>
