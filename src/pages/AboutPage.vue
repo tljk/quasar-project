@@ -27,7 +27,7 @@
           Network status: {{ appStore.networkStatus }}
         </q-card-section>
 
-        <q-card-actions v-if="appStore.NextBundleId">
+        <q-card-actions v-if="appStore.nextBundleId">
           <q-btn label="Update" @click="LiveUpdate.reload()"></q-btn>
         </q-card-actions>
         <q-card-actions v-if="appStore.currentBundleId">
