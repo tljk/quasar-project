@@ -1,17 +1,17 @@
 <template>
-  <q-page
-    class="fixed-full dark-mode q-pa-md q-gutter-y-sm scroll hide-scrollbar"
-  >
-    <q-img
-      v-if="imageDataUrl"
-      :src="imageDataUrl"
-      loading="lazy"
-      class="full"
-      fit="contain"
-    />
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
-    </q-page-sticky>
+  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+    <div class="q-pa-md q-gutter-y-sm">
+      <q-img
+        v-if="imageDataUrl"
+        :src="imageDataUrl"
+        loading="lazy"
+        class="full"
+        fit="contain"
+      />
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
+      </q-page-sticky>
+    </div>
   </q-page>
 </template>
 

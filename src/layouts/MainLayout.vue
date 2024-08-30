@@ -23,21 +23,6 @@
       </q-tabs>
     </q-footer>
   </q-layout>
-  <q-layout class="fixed overflow-hidden z-max">
-    <q-page-container>
-      <router-view v-slot="{ Component, route }">
-        <transition
-          mode="in-out"
-          :enter-active-class="route.meta.enterActiveClass"
-          :leave-active-class="route.meta.leaveActiveClass"
-        >
-          <keep-alive>
-            <component :is="Component" :key="route.path" />
-          </keep-alive>
-        </transition>
-      </router-view>
-    </q-page-container>
-  </q-layout>
 </template>
 
 <script setup>

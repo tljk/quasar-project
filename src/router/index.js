@@ -36,13 +36,14 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from) => {
+    if (from.path == "/" && to.path == "/") return;
     const isBack = position > window.history.state.position;
     if (isBack) {
-      to.meta.enterActiveClass = "hidden";
+      to.meta.enterActiveClass = "animated slideInLeft";
       to.meta.leaveActiveClass = "animated slideOutRight fullscreen";
     } else {
       to.meta.enterActiveClass = "animated slideInRight fullscreen";
-      to.meta.leaveActiveClass = "hidden";
+      to.meta.leaveActiveClass = "animated slideOutLeft";
     }
   });
 

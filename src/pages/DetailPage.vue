@@ -1,35 +1,35 @@
 <template>
-  <q-page
-    class="fixed-full dark-mode q-pa-md q-gutter-sm scroll hide-scrollbar"
-  >
-    <q-btn label="Go to home" to="/home" />
-    <q-btn label="Go to detail" @click="onClick" />
-    <q-btn label="Go to about" to="/about" />
-    <q-btn label="Go to wifi scan" to="/wifi-scan" />
-    <q-btn label="Go to barcode scan" to="/barcode-scan" />
-    <q-btn label="Go to geolocation" to="/geolocation" />
-    <q-btn label="Go to camera" to="/camera" />
-    <q-btn label="Redirect to speed test" @click="toSpeedTest" />
-    Speed {{ url.split("=")[1] }}
-    <q-btn-dropdown
-      label="Redirect to google map"
-      split
-      cover
-      @click="toGoogleMap"
-    >
-      <q-list>
-        <q-item>
-          <q-item-section>
-            <q-input v-model="latitude" label="latitude" />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>
-            <q-input v-model="longitude" label="longitude" />
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
+  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+    <div class="q-pa-md q-gutter-sm">
+      <q-btn label="Go to home" to="/home" />
+      <q-btn label="Go to detail" @click="onClick" />
+      <q-btn label="Go to about" to="/about" />
+      <q-btn label="Go to wifi scan" to="/wifi-scan" />
+      <q-btn label="Go to barcode scan" to="/barcode-scan" />
+      <q-btn label="Go to geolocation" to="/geolocation" />
+      <q-btn label="Go to camera" to="/camera" />
+      <q-btn label="Redirect to speed test" @click="toSpeedTest" />
+      <div v-if="url">Speed {{ url.split("=")[1] }}</div>
+      <q-btn-dropdown
+        label="Redirect to google map"
+        split
+        cover
+        @click="toGoogleMap"
+      >
+        <q-list>
+          <q-item>
+            <q-item-section>
+              <q-input v-model="latitude" label="latitude" />
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-input v-model="longitude" label="longitude" />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
   </q-page>
 </template>
 

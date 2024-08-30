@@ -1,15 +1,15 @@
 <template>
-  <q-page
-    class="fixed-full dark-mode q-pa-md q-gutter-y-sm scroll hide-scrollbar"
-  >
-    <q-card v-for="(item, key) of geolocationResult" :key="key">
-      <q-card-section v-if="geolocationResult">
-        {{ item }}
-      </q-card-section>
-    </q-card>
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="gps_fixed" color="primary" @click="getGeolocation" />
-    </q-page-sticky>
+  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+    <div class="q-pa-md q-gutter-y-sm">
+      <q-card v-for="(item, key) of geolocationResult" :key="key">
+        <q-card-section v-if="geolocationResult">
+          {{ item }}
+        </q-card-section>
+      </q-card>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn fab icon="gps_fixed" color="primary" @click="getGeolocation" />
+      </q-page-sticky>
+    </div>
   </q-page>
 </template>
 

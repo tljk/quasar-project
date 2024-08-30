@@ -1,9 +1,18 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
-  </router-view>
+  <q-layout class="fixed overflow-hidden">
+    <q-page-container>
+      <router-view v-slot="{ Component, route }">
+        <transition
+          :enter-active-class="route.meta.enterActiveClass"
+          :leave-active-class="route.meta.leaveActiveClass"
+        >
+          <keep-alive>
+            <component :is="Component" :key="route.path" />
+          </keep-alive>
+        </transition>
+      </router-view>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup>
