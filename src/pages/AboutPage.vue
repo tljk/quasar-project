@@ -27,8 +27,11 @@
           Network status: {{ appStore.networkStatus }}
         </q-card-section>
 
-        <q-card-actions v-if="appStore.device?.nativeMobile">
-          <q-btn label="Check update" @click="onClick"></q-btn>
+        <q-card-actions v-if="appStore.NextBundleId">
+          <q-btn label="Update" @click="LiveUpdate.reload()"></q-btn>
+        </q-card-actions>
+        <q-card-actions v-if="appStore.currentBundleId">
+          <q-btn label="Reset" @click="LiveUpdate.reset()"></q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -40,8 +43,4 @@ import { useAppStore } from "@/stores/appStore";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 
 const appStore = useAppStore();
-
-async function onClick() {
-  await LiveUpdate.reload();
-}
 </script>

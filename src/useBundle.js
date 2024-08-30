@@ -30,7 +30,7 @@ export async function downloadBundle() {
   })
     .then(async () => {
       await LiveUpdate.setBundle({ bundleId: bundleId });
-      appStore.setLatestBundle(undefined);
+      appStore.setNextBundleId(bundleId);
     })
     .catch((error) => {
       Notify.create({
@@ -47,7 +47,15 @@ export async function checkForUpdates(download = false) {
   ) {
     appStore.setLatestBundle(await getLatestBundle());
     if (appStore.latestBundle && download) {
-      await downloadBundle();
+      if (appStore.currentBundleId) {
+        if (appStore.currentBundleId != appStore.latestBundle.bundleId) {
+          await downloadBundle();
+        }
+      } else {
+        if ("v" + appStore.version != appStore.latestBundle?.bundleId) {
+          await downloadBundle();
+        }
+      }
     }
   }
 }

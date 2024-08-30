@@ -10,6 +10,7 @@ export const useAppStore = defineStore("app", {
 
     currentBundleId: undefined,
     latestBundle: undefined,
+    nextBundleId: undefined,
     serviceWorker: undefined,
     networkStatus: undefined,
   }),
@@ -29,6 +30,9 @@ export const useAppStore = defineStore("app", {
     getLatestBundle() {
       return this.latestBundle;
     },
+    getNextBundleId() {
+      return this.nextBundleId;
+    },
     getDevice() {
       return this.device;
     },
@@ -45,6 +49,9 @@ export const useAppStore = defineStore("app", {
     },
     setLatestBundle(value) {
       this.latestBundle = value;
+    },
+    setNextBundleId(bundleId) {
+      this.nextBundleId = bundleId;
     },
     setServiceWorker(key, value) {
       this.serviceWorker = this.serviceWorker ?? {};
