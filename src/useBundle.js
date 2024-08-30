@@ -41,7 +41,10 @@ export async function downloadBundle() {
 
 export async function checkForUpdates(download = false) {
   const appStore = useAppStore();
-  if (appStore.networkStatus?.connected && appStore.mode == "production") {
+  if (
+    appStore.networkStatus?.connected &&
+    appStore.environment == "production"
+  ) {
     appStore.setLatestBundle(await getLatestBundle());
     if (appStore.latestBundle && download) {
       await downloadBundle();
