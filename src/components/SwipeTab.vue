@@ -25,6 +25,7 @@
 import { ref, computed, onMounted } from "vue";
 
 const props = defineProps({
+  size: { type: Number },
   vertical: { type: Boolean, default: false },
   distanceThreshold: { type: Number, default: 0.6 },
   velocityThreshold: { type: Number, default: 0.3 },
@@ -40,7 +41,11 @@ const delay = ref(0);
 const distance = computed(() => -index.value * length.value);
 const length = computed(() => (props.vertical ? height.value : width.value));
 const fullLength = computed(() => {
-  return length.value * swipeContainer.value?.children.length ?? 1;
+  if (props.size) {
+    return length.value * props.size;
+  } else {
+    return length.value * swipeContainer.value?.children.length ?? 1;
+  }
 });
 const style = computed(() => {
   return props.vertical
