@@ -79,19 +79,23 @@ function handlePan({ evt, ...newInfo }) {
   }
 
   if (newInfo.isFinal) {
-    delay.value = 0.3;
     const velocity = tempOffset / newInfo.duration;
+    delay.value = 0.3;
     if (
       velocity > props.velocityThreshold ||
       tempOffset > length.value * props.distanceThreshold
     ) {
       // swipe left
+      const time = (length.value - tempOffset) / Math.abs(velocity) / 666;
+      delay.value = time > 0.3 ? 0.3 : time;
       index.value = -Math.ceil(offset.value / length.value);
     } else if (
       velocity < -props.velocityThreshold ||
       tempOffset < -length.value * props.distanceThreshold
     ) {
       // swipe right
+      const time = (length.value - tempOffset) / Math.abs(velocity) / 666;
+      delay.value = time > 0.3 ? 0.3 : time;
       index.value = -Math.floor(offset.value / length.value);
     }
     offset.value = distance.value;

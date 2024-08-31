@@ -3,7 +3,7 @@
     <SwipeTab :size="imageDataList.length" class="full">
       <q-page class="full" v-for="(item, key) of imageDataList" :key="key">
         {{ key }}
-        <q-img :src="item.dataUrl" loading="lazy" class="full" fit="contain" />
+        <q-img :src="item.webPath" loading="lazy" class="full" fit="contain" />
       </q-page>
     </SwipeTab>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -24,7 +24,7 @@ const imageDataList = ref([]);
 const cameraOptions = ref({
   quality: 90,
   direction: "REAR",
-  resultType: CameraResultType.DataUrl,
+  resultType: CameraResultType.Uri,
 });
 
 const takePicture = async () => {
