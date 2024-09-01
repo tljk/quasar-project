@@ -55,11 +55,13 @@ const style = computed(() => {
 });
 
 function handlePan(event) {
-  if (event.isFirst) {
+  if (event.type == "panstart") {
     delay.value = 0;
   }
 
-  const tempOffset = props.vertical ? event.deltaY : event.deltaX;
+  const tempOffset = props.vertical
+    ? event.detail.global.deltaY
+    : event.detail.global.deltaX;
   const temp = distance.value + tempOffset;
   if (temp >= 0) {
     offset.value = 0;
@@ -69,8 +71,10 @@ function handlePan(event) {
     offset.value = temp;
   }
 
-  if (event.isFinal) {
-    const velocity = props.vertical ? event.velocityY : event.velocityX;
+  if (event.type == "panend") {
+    const velocity = props.vertical
+      ? event.detail.live.speedY
+      : event.detail.live.speedX;
     const time =
       (length.value - Math.abs(tempOffset)) / Math.abs(velocity) / 666;
     delay.value = time > 0.3 ? 0.3 : time;

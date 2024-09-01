@@ -26,7 +26,7 @@ module.exports = configure(function (/* ctx */) {
       "dark-mode",
       "addressbar-color",
       "pwa-elements",
-      "hammer",
+      "contact",
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

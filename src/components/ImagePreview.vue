@@ -1,7 +1,8 @@
 <template>
   <div
-    class="full overflow-hidden flex justify-center align-center"
+    class="full overflow-hidden flex justify-center align-center no-two-finger-zoom"
     v-pinch="handlePinch"
+    v-pan="handlePan"
   >
     <img
       ref="img"
@@ -30,7 +31,7 @@ const props = defineProps({
   },
   maxScaleRatio: {
     type: Number,
-    default: 5,
+    default: 10,
   },
   minScaleRatio: {
     type: Number,
@@ -69,11 +70,11 @@ const maxDistanceY = computed(() =>
 );
 
 function handlePinch(event) {
-  if (event.isFirst) {
+  if (event.type == "pinchstart") {
     delay.value = 0;
   }
 
-  const temp = scale.value * event.scale;
+  const temp = scale.value * event.detail.global.scale;
   if (temp >= props.maxScaleRatio) {
     scaleRatio.value = props.maxScaleRatio;
   } else if (temp <= props.minScaleRatio) {
@@ -82,10 +83,12 @@ function handlePinch(event) {
     scaleRatio.value = temp;
   }
 
-  offsetX.value = distanceX.value + event.deltaX / scaleRatio.value;
-  offsetY.value = distanceY.value + event.deltaY / scaleRatio.value;
+  offsetX.value =
+    distanceX.value + event.detail.global.deltaX / scaleRatio.value;
+  offsetY.value =
+    distanceY.value + event.detail.global.deltaY / scaleRatio.value;
 
-  if (event.isFinal) {
+  if (event.type == "pinchend") {
     delay.value = 0.3;
     if (scaleRatio.value <= 1) {
       scale.value = scaleRatio.value = 1;
@@ -107,6 +110,51 @@ function handlePinch(event) {
       } else {
         distanceY.value = offsetY.value;
       }
+    }
+  }
+}
+
+function handlePan(event) {
+  if (scale.value <= 1) {
+    return;
+  } else {
+    event.detail.global.srcEvent.pauseX = true;
+    event.detail.global.srcEvent.pauseY = true;
+  }
+
+  if (event.type == "panstart") {
+    delay.value = 0;
+  }
+
+  const tempX = distanceX.value + event.detail.global.deltaX / scale.value;
+  const tempY = distanceY.value + event.detail.global.deltaY / scale.value;
+  if (tempX > maxDistanceX.value) {
+    offsetX.value = maxDistanceX.value;
+    event.detail.global.srcEvent.pauseX = false;
+  } else if (tempX < -maxDistanceX.value) {
+    offsetX.value = -maxDistanceX.value;
+    event.detail.global.srcEvent.pauseX = false;
+  } else {
+    offsetX.value = tempX;
+  }
+  if (tempY > maxDistanceY.value) {
+    offsetY.value = maxDistanceY.value;
+    event.detail.global.srcEvent.pauseY = false;
+  } else if (tempY < -maxDistanceY.value) {
+    offsetY.value = -maxDistanceY.value;
+    event.detail.global.srcEvent.pauseY = false;
+  } else {
+    offsetY.value = tempY;
+  }
+
+  if (event.type == "panend") {
+    delay.value = 0.3;
+    if (scale.value <= 1) {
+      distanceX.value = offsetX.value = 0;
+      distanceY.value = offsetY.value = 0;
+    } else {
+      distanceX.value = offsetX.value;
+      distanceY.value = offsetY.value;
     }
   }
 }
