@@ -1,9 +1,8 @@
 <template>
-  <q-page class="full dark-mode scroll hide-scrollbar">
+  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <SwipeTab :size="imageDataList.length" class="full">
       <q-page class="full" v-for="(item, key) of imageDataList" :key="key">
-        {{ key }}
-        <q-img :src="item.webPath" loading="lazy" class="full" fit="contain" />
+        <ImagePreview :src="item.webPath" />
       </q-page>
     </SwipeTab>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -17,6 +16,7 @@ import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import SwipeTab from "@/components/SwipeTab.vue";
+import ImagePreview from "src/components/ImagePreview.vue";
 
 const $q = useQuasar();
 

@@ -1,20 +1,11 @@
 <template>
-  <div
-    v-if="!props.vertical"
-    class="overflow-hidden"
-    v-touch-pan.horizontal.prevent.mouse="handlePan"
-  >
-    <div ref="swipeContainer" class="flex row no-wrap" :style="style">
-      <slot></slot>
-    </div>
-    <q-resize-observer @resize="onResize" />
-  </div>
-  <div
-    v-else
-    class="overflow-hidden"
-    v-touch-pan.vertical.prevent.mouse="handlePan"
-  >
-    <div ref="swipeContainer" class="flex column no-wrap" :style="style">
+  <div class="overflow-hidden" v-pan="handlePan">
+    <div
+      ref="swipeContainer"
+      class="flex no-wrap"
+      :class="{ column: props.vertical, row: !props.vertical }"
+      :style="style"
+    >
       <slot></slot>
     </div>
     <q-resize-observer @resize="onResize" />
@@ -22,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   size: { type: Number },
@@ -63,12 +54,12 @@ const style = computed(() => {
       };
 });
 
-function handlePan({ evt, ...newInfo }) {
-  if (newInfo.isFirst) {
+function handlePan(event) {
+  if (event.isFirst) {
     delay.value = 0;
   }
 
-  const tempOffset = props.vertical ? newInfo.offset.y : newInfo.offset.x;
+  const tempOffset = props.vertical ? event.deltaY : event.deltaX;
   const temp = distance.value + tempOffset;
   if (temp >= 0) {
     offset.value = 0;
@@ -78,24 +69,22 @@ function handlePan({ evt, ...newInfo }) {
     offset.value = temp;
   }
 
-  if (newInfo.isFinal) {
-    const velocity = tempOffset / newInfo.duration;
-    delay.value = 0.3;
+  if (event.isFinal) {
+    const velocity = props.vertical ? event.velocityY : event.velocityX;
+    const time =
+      (length.value - Math.abs(tempOffset)) / Math.abs(velocity) / 666;
+    delay.value = time > 0.3 ? 0.3 : time;
     if (
       velocity > props.velocityThreshold ||
       tempOffset > length.value * props.distanceThreshold
     ) {
       // swipe left
-      const time = (length.value - tempOffset) / Math.abs(velocity) / 666;
-      delay.value = time > 0.3 ? 0.3 : time;
       index.value = -Math.ceil(offset.value / length.value);
     } else if (
       velocity < -props.velocityThreshold ||
       tempOffset < -length.value * props.distanceThreshold
     ) {
       // swipe right
-      const time = (length.value - tempOffset) / Math.abs(velocity) / 666;
-      delay.value = time > 0.3 ? 0.3 : time;
       index.value = -Math.floor(offset.value / length.value);
     }
     offset.value = distance.value;
@@ -108,8 +97,6 @@ function onResize(size) {
   delay.value = 0;
   offset.value = distance.value;
 }
-
-onMounted(() => {});
 </script>
 
 <style lang="scss" scoped></style>

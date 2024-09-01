@@ -18,7 +18,7 @@
     "@capacitor/splash-screen": "^6.0.2",
     "@capacitor/status-bar": "^6.0.1",
     "@capawesome/capacitor-live-update": "^6.3.0",
-    "@capgo/inappbrowser": "^6.3.3",
+    "@capgo/inappbrowser": "^6.4.4",
     "ln-capacitor-wifi": "^0.3.0-beta"
   }
 }
