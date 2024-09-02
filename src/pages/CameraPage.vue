@@ -1,9 +1,18 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
-    <PanContainer :size="imageDataList.length" class="full">
-      <q-page class="full" v-for="(item, key) of imageDataList" :key="key">
-        <ImagePreview :src="item.webPath" />
-      </q-page>
+    <PanContainer vertical class="full" :size="imageDataList.length">
+      <PinchContainer
+        class="full"
+        v-for="(item, key) of imageDataList"
+        :key="key"
+      >
+        <img
+          class="full"
+          style="object-fit: contain"
+          loading="lazy"
+          :src="item.webPath"
+        />
+      </PinchContainer>
     </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
@@ -16,7 +25,7 @@ import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
-import ImagePreview from "src/components/PinchContainer.vue";
+import PinchContainer from "@/components/PinchContainer.vue";
 
 const $q = useQuasar();
 
@@ -27,7 +36,7 @@ const cameraOptions = ref({
   resultType: CameraResultType.Uri,
 });
 
-const takePicture = async () => {
+async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
     .then((image) => {
       imageDataList.value.push(image);
@@ -37,5 +46,5 @@ const takePicture = async () => {
         message: `Error taking picture: ${error.message}`,
       });
     });
-};
+}
 </script>

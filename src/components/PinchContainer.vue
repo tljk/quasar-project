@@ -1,17 +1,13 @@
 <template>
   <div
-    class="full overflow-hidden flex justify-center align-center no-two-finger-zoom"
+    class="overflow-hidden no-two-finger-zoom flex no-wrap justify-center align-center"
     v-pinch="handlePinch"
     v-pan="handlePan"
   >
-    <img
-      ref="img"
-      :src="props.src"
-      :style="style"
-      :loading="props.loading"
-      style="object-fit: contain; max-width: 100%; max-height: 100%"
-      @load="onLoad"
-    />
+    <div class="flex no-wrap" :style="style">
+      <slot></slot>
+      <q-resize-observer @resize="onContainerResize" />
+    </div>
     <q-resize-observer @resize="onResize" />
   </div>
 </template>
@@ -21,15 +17,6 @@ import { ref, computed } from "vue";
 import { event } from "quasar";
 
 const props = defineProps({
-  src: String,
-  loading: {
-    type: String,
-    default: "lazy",
-  },
-  fit: {
-    type: String,
-    default: "scale-down",
-  },
   maxScaleRatio: {
     type: Number,
     default: 10,
@@ -39,12 +26,10 @@ const props = defineProps({
     default: 0.1,
   },
 });
-const img = ref();
-
 const width = ref(0);
 const height = ref(0);
-const imgWidth = ref(0);
-const imgHeight = ref(0);
+const containerWidth = ref(0);
+const containerHeight = ref(0);
 const scale = ref(1);
 const scaleRatio = ref(1);
 const distanceX = ref(0);
@@ -61,12 +46,16 @@ const style = computed(() => {
 });
 const maxDistanceX = computed(() => {
   const distance =
-    (imgWidth.value * scaleRatio.value - width.value) / 2 / scaleRatio.value;
+    (containerWidth.value * scaleRatio.value - width.value) /
+    2 /
+    scaleRatio.value;
   return distance > 0 ? distance : 0;
 });
 const maxDistanceY = computed(() => {
   const distance =
-    (imgHeight.value * scaleRatio.value - height.value) / 2 / scaleRatio.value;
+    (containerHeight.value * scaleRatio.value - height.value) /
+    2 /
+    scaleRatio.value;
   return distance > 0 ? distance : 0;
 });
 
@@ -133,7 +122,7 @@ function handlePan(e) {
     offsetY.value = tempY;
   }
 
-  if (maxDistanceX.value > 0) {
+  if (scaleRatio.value > 1) {
     event.stopAndPrevent(e);
   }
 
@@ -152,12 +141,10 @@ function handlePan(e) {
 function onResize(size) {
   width.value = size.width;
   height.value = size.height;
-  imgWidth.value = img.value.clientWidth;
-  imgHeight.value = img.value.clientHeight;
 }
 
-function onLoad() {
-  imgWidth.value = img.value.clientWidth;
-  imgHeight.value = img.value.clientHeight;
+function onContainerResize(size) {
+  containerWidth.value = size.width;
+  containerHeight.value = size.height;
 }
 </script>

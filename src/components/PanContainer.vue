@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-hidden" v-pan="handlePan">
     <div
-      ref="swipeContainer"
+      ref="panContainer"
       class="flex no-wrap"
       :class="{ column: props.vertical, row: !props.vertical }"
       :style="style"
@@ -22,7 +22,7 @@ const props = defineProps({
   velocityThreshold: { type: Number, default: 0.3 },
 });
 const index = defineModel({ default: 0 });
-const swipeContainer = ref();
+const panContainer = ref();
 
 const width = ref(0);
 const height = ref(0);
@@ -35,7 +35,7 @@ const fullLength = computed(() => {
   if (props.size) {
     return length.value * props.size;
   } else {
-    return length.value * swipeContainer.value?.children.length ?? 1;
+    return length.value * panContainer.value?.children.length ?? 1;
   }
 });
 const style = computed(() => {
