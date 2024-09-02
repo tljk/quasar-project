@@ -18,6 +18,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { event } from "quasar";
 
 const props = defineProps({
   src: String,
@@ -58,23 +59,23 @@ const style = computed(() => {
     transition: `transform ${delay.value}s`,
   };
 });
-const maxDistanceX = computed(() =>
-  Math.abs(
-    (imgWidth.value * scaleRatio.value - width.value) / 2 / scaleRatio.value
-  )
-);
-const maxDistanceY = computed(() =>
-  Math.abs(
-    (imgHeight.value * scaleRatio.value - height.value) / 2 / scaleRatio.value
-  )
-);
+const maxDistanceX = computed(() => {
+  const distance =
+    (imgWidth.value * scaleRatio.value - width.value) / 2 / scaleRatio.value;
+  return distance > 0 ? distance : 0;
+});
+const maxDistanceY = computed(() => {
+  const distance =
+    (imgHeight.value * scaleRatio.value - height.value) / 2 / scaleRatio.value;
+  return distance > 0 ? distance : 0;
+});
 
-function handlePinch(event) {
-  if (event.type == "pinchstart") {
+function handlePinch(e) {
+  if (e.type == "pinchstart") {
     delay.value = 0;
   }
 
-  const temp = scale.value * event.detail.global.scale;
+  const temp = scale.value * e.detail.global.scale;
   if (temp >= props.maxScaleRatio) {
     scaleRatio.value = props.maxScaleRatio;
   } else if (temp <= props.minScaleRatio) {
@@ -83,12 +84,10 @@ function handlePinch(event) {
     scaleRatio.value = temp;
   }
 
-  offsetX.value =
-    distanceX.value + event.detail.global.deltaX / scaleRatio.value;
-  offsetY.value =
-    distanceY.value + event.detail.global.deltaY / scaleRatio.value;
+  offsetX.value = distanceX.value + e.detail.global.deltaX / scaleRatio.value;
+  offsetY.value = distanceY.value + e.detail.global.deltaY / scaleRatio.value;
 
-  if (event.type == "pinchend") {
+  if (e.type == "pinchend") {
     delay.value = 0.3;
     if (scaleRatio.value <= 1) {
       scale.value = scaleRatio.value = 1;
@@ -114,40 +113,31 @@ function handlePinch(event) {
   }
 }
 
-function handlePan(event) {
-  if (scale.value <= 1) {
-    return;
-  } else {
-    event.detail.global.srcEvent.pauseX = true;
-    event.detail.global.srcEvent.pauseY = true;
-  }
+function handlePan(e) {
+  delay.value = 0;
+  const tempX = distanceX.value + e.detail.global.deltaX / scale.value;
+  const tempY = distanceY.value + e.detail.global.deltaY / scale.value;
 
-  if (event.type == "panstart") {
-    delay.value = 0;
-  }
-
-  const tempX = distanceX.value + event.detail.global.deltaX / scale.value;
-  const tempY = distanceY.value + event.detail.global.deltaY / scale.value;
   if (tempX > maxDistanceX.value) {
     offsetX.value = maxDistanceX.value;
-    event.detail.global.srcEvent.pauseX = false;
   } else if (tempX < -maxDistanceX.value) {
     offsetX.value = -maxDistanceX.value;
-    event.detail.global.srcEvent.pauseX = false;
   } else {
     offsetX.value = tempX;
   }
   if (tempY > maxDistanceY.value) {
     offsetY.value = maxDistanceY.value;
-    event.detail.global.srcEvent.pauseY = false;
   } else if (tempY < -maxDistanceY.value) {
     offsetY.value = -maxDistanceY.value;
-    event.detail.global.srcEvent.pauseY = false;
   } else {
     offsetY.value = tempY;
   }
 
-  if (event.type == "panend") {
+  if (maxDistanceX.value > 0) {
+    event.stopAndPrevent(e);
+  }
+
+  if (e.type == "panend") {
     delay.value = 0.3;
     if (scale.value <= 1) {
       distanceX.value = offsetX.value = 0;

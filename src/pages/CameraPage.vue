@@ -1,10 +1,10 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
-    <SwipeTab :size="imageDataList.length" class="full">
+    <PanContainer :size="imageDataList.length" class="full">
       <q-page class="full" v-for="(item, key) of imageDataList" :key="key">
         <ImagePreview :src="item.webPath" />
       </q-page>
-    </SwipeTab>
+    </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
     </q-page-sticky>
@@ -15,8 +15,8 @@
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import SwipeTab from "@/components/SwipeTab.vue";
-import ImagePreview from "src/components/ImagePreview.vue";
+import PanContainer from "@/components/PanContainer.vue";
+import ImagePreview from "src/components/PinchContainer.vue";
 
 const $q = useQuasar();
 

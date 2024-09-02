@@ -18,6 +18,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
+import { PointerListener } from "contactjs";
 import { useAppStore } from "@/stores/appStore";
 import { checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
@@ -29,6 +30,7 @@ const $q = useQuasar();
 const appStore = useAppStore();
 const appearanceListenerHandle = ref();
 const networkListenerHandle = ref();
+const pointerListener = ref();
 
 const lightBackground = "#ffffff";
 const darkBackground = "#121212";
@@ -38,6 +40,8 @@ const backgroundColor = computed(() =>
 );
 
 onMounted(async () => {
+  pointerListener.value = new PointerListener(document.getElementById("q-app"));
+
   $q.dark.set(await (await DarkMode.isDarkMode()).dark);
   document.body.style.setProperty("--q-dark-page", backgroundColor.value);
   appearanceListenerHandle.value = await DarkMode.addAppearanceListener(
