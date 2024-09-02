@@ -3,6 +3,11 @@
   height: 100%;
 }
 
+.full-window {
+  width: 100vw;
+  height: 100vh;
+}
+
 .dark-mode {
   background: var(--q-dark-page);
 }
@@ -97,4 +102,8 @@
 
 .no-two-finger-zoom {
   touch-action: none;
+}
+
+.q-page {
+  min-width: calc(100vw);
 }

@@ -1,8 +1,8 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
-    <PanContainer vertical class="full" :size="imageDataList.length">
+    <PanContainer vertical class="full">
       <PinchContainer
-        class="full"
+        class="full-window"
         v-for="(item, key) of imageDataList"
         :key="key"
       >

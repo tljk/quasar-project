@@ -59,5 +59,6 @@ import PinchContainer from "src/components/PinchContainer.vue";
   width: 50vw;
   height: 50vh;
   min-height: unset !important;
+  min-width: unset !important;
 }
 </style>
