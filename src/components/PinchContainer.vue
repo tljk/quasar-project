@@ -24,6 +24,7 @@ const props = defineProps({
   pinchStyle: {
     type: Object,
   },
+  // following props are used by usePinchContainer
   maxScaleRatio: {
     type: Number,
     default: 10,

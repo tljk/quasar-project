@@ -14,85 +14,45 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
+import { usePanContainer } from "./usePanContainer";
 
 const props = defineProps({
+  composable: { type: Boolean, default: false },
+  panStyle: { type: Object },
+  // following props are used by usePanContainer
+  index: { type: Number, default: 0 },
   vertical: { type: Boolean, default: false },
   distanceThreshold: { type: Number, default: 0.6 },
   velocityThreshold: { type: Number, default: 0.3 },
 });
-const index = defineModel({ default: 0 });
+const emit = defineEmits(["pan", "pinch", "resize", "containerResize"]);
 
-const width = ref(0);
-const height = ref(0);
-const offset = ref(0);
-const delay = ref(0);
-const fullLength = ref(0);
+let style;
+let handlePan;
+let onResize;
+let onContainerResize;
 
-const distance = computed(() => -index.value * length.value);
-const length = computed(() => (props.vertical ? height.value : width.value));
+if (props.composable) {
+  style = computed(() => props.panStyle);
 
-const style = computed(() => {
-  return props.vertical
-    ? {
-        transform: `translate(0, ${offset.value}px)`,
-        transition: `transform ${delay.value}s`,
-      }
-    : {
-        transform: `translate(${offset.value}px, 0)`,
-        transition: `transform ${delay.value}s`,
-      };
-});
+  handlePan = (event) => {
+    emit("pan", event);
+  };
 
-function handlePan(e) {
-  delay.value = 0;
-  const tempOffset = props.vertical
-    ? e.detail.global.deltaY
-    : e.detail.global.deltaX;
-  const temp = distance.value + tempOffset;
-  if (temp >= 0) {
-    offset.value = 0;
-  } else if (temp <= -fullLength.value + length.value) {
-    offset.value = -fullLength.value + length.value;
-  } else {
-    offset.value = temp;
-  }
+  onResize = (size) => {
+    emit("resize", size);
+  };
 
-  if (e.type == "panend") {
-    const velocity = props.vertical
-      ? e.detail.live.speedY
-      : e.detail.live.speedX;
-    const time =
-      (length.value - Math.abs(tempOffset)) / Math.abs(velocity) / 666;
-    delay.value = time > 0.3 ? 0.3 : time;
-    if (
-      velocity > props.velocityThreshold ||
-      tempOffset > length.value * props.distanceThreshold
-    ) {
-      // swipe left
-      index.value = -Math.ceil(offset.value / length.value);
-    } else if (
-      velocity < -props.velocityThreshold ||
-      tempOffset < -length.value * props.distanceThreshold
-    ) {
-      // swipe right
-      index.value = -Math.floor(offset.value / length.value);
-    }
-    offset.value = distance.value;
-  }
-}
-
-function onResize(size) {
-  delay.value = 0;
-  width.value = size.width;
-  height.value = size.height;
-  offset.value = distance.value;
-}
-
-function onContainerResize(size) {
-  delay.value = 0;
-  fullLength.value = props.vertical ? size.height : size.width;
-  offset.value = distance.value;
+  onContainerResize = (size) => {
+    emit("containerResize", size);
+  };
+} else {
+  const panContainer = usePanContainer(props);
+  style = panContainer.style;
+  handlePan = panContainer.handlePan;
+  onResize = panContainer.onResize;
+  onContainerResize = panContainer.onContainerResize;
 }
 </script>
 

@@ -35,6 +35,10 @@ const routes = [
     path: "/pinch-container",
     component: () => import("pages/PinchContainerPage.vue"),
   },
+  {
+    path: "/pan-container",
+    component: () => import("pages/PanContainerPage.vue"),
+  },
 
   // Always leave this as last one,
   // but you can also remove it

@@ -9,6 +9,7 @@
       <q-btn label="Go to geolocation" to="/geolocation" />
       <q-btn label="Go to camera" to="/camera" />
       <q-btn label="Go to pinch container" to="/pinch-container" />
+      <q-btn label="Go to pan container" to="/pan-container" />
       <q-btn label="Redirect to speed test" @click="toSpeedTest" />
       <div v-if="url">Speed {{ url.split("=")[1] }}</div>
       <q-btn-dropdown
