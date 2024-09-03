@@ -31,6 +31,10 @@ const routes = [
     path: "/camera",
     component: () => import("pages/CameraPage.vue"),
   },
+  {
+    path: "/pinch-container",
+    component: () => import("pages/PinchContainerPage.vue"),
+  },
 
   // Always leave this as last one,
   // but you can also remove it
