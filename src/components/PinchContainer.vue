@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { usePinchContainer } from "./usePinchContainer";
 
 const props = defineProps({
@@ -41,7 +42,7 @@ let onResize;
 let onContainerResize;
 
 if (props.composable) {
-  style = ref(props.pinchStyle);
+  style = computed(() => props.pinchStyle);
 
   handlePinch = (event) => {
     emit("pinch", event);

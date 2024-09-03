@@ -24,5 +24,5 @@ import PinchContainer from "@/components/PinchContainer.vue";
 import { usePinchContainer } from "@/components/usePinchContainer";
 
 const { style, handlePinch, handlePan, onResize, onContainerResize } =
-  usePinchContainer();
+  usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 });
 </script>
