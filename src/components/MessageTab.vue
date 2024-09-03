@@ -1,13 +1,11 @@
 <template>
-  <PanContainer vertical class="full">
-    <q-page class="full bg-red">0</q-page>
-    <q-page class="full bg-blue">1</q-page>
-    <q-page class="full bg-green">2</q-page>
-    <q-page class="full bg-yellow">3</q-page>
-    <q-page class="full bg-grey">4</q-page>
-  </PanContainer>
+  <q-page class="full" @click="onClick"> </q-page>
 </template>
 
 <script setup>
-import PanContainer from "src/components/PanContainer.vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+function onClick() {
+  router.push("/detail");
+}
 </script>
