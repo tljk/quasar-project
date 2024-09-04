@@ -3,7 +3,7 @@
     <PinchContainer
       class="full-window"
       composable
-      :pinchStyle="style"
+      :pinchStyle="pinchStyle"
       @pinch="handlePinch"
       @pan="handlePan"
       @resize="onResize"
@@ -23,6 +23,6 @@
 import PinchContainer from "@/components/PinchContainer.vue";
 import { usePinchContainer } from "@/components/usePinchContainer";
 
-const { style, handlePinch, handlePan, onResize, onContainerResize } =
+const { pinchStyle, handlePinch, handlePan, onResize, onContainerResize } =
   usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 });
 </script>

@@ -3,7 +3,7 @@
     <PanContainer
       class="full"
       composable
-      :panStyle="style"
+      :panStyle="panStyle"
       @pan="handlePan"
       @resize="onResize"
       @containerResize="onContainerResize"
@@ -20,7 +20,9 @@
           :key="key1"
           class="full-window flex justify-center items-center"
         >
-          <div class="text-h1 text-bold">col:{{ key }} row{{ key1 }}</div>
+          <div class="text-h1 text-bold text-center">
+            col:{{ key }} row{{ key1 }}
+          </div>
         </q-page>
       </PanContainer>
     </PanContainer>
@@ -31,7 +33,7 @@
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 
-const { style, handlePan, onResize, onContainerResize } = usePanContainer({
+const { panStyle, handlePan, onResize, onContainerResize } = usePanContainer({
   index: 2,
   vertical: false,
   distanceThreshold: 0.6,

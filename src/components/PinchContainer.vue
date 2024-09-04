@@ -1,10 +1,10 @@
 <template>
   <div
-    class="overflow-hidden no-two-finger-zoom flex no-wrap justify-center align-center"
+    class="overflow-hidden no-two-finger-zoom flex column no-wrap justify-center align-center"
     v-pinch="handlePinch"
     v-pan="handlePan"
   >
-    <div class="flex no-wrap" :style="style">
+    <div :style="style" style="max-width: 100%; max-height: 100%; margin: auto">
       <slot></slot>
       <q-resize-observer @resize="onContainerResize" />
     </div>
@@ -62,7 +62,7 @@ if (props.composable) {
   };
 } else {
   const pinchContainer = usePinchContainer(props);
-  style = pinchContainer.style;
+  style = pinchContainer.pinchStyle;
   handlePinch = pinchContainer.handlePinch;
   handlePan = pinchContainer.handlePan;
   onResize = pinchContainer.onResize;

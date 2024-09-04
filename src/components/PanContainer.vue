@@ -49,7 +49,7 @@ if (props.composable) {
   };
 } else {
   const panContainer = usePanContainer(props);
-  style = panContainer.style;
+  style = panContainer.panStyle;
   handlePan = panContainer.handlePan;
   onResize = panContainer.onResize;
   onContainerResize = panContainer.onContainerResize;

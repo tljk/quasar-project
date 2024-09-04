@@ -13,7 +13,7 @@ export function usePinchContainer(props) {
   const offsetY = ref(0);
   const delay = ref(0);
 
-  const style = computed(() => {
+  const pinchStyle = computed(() => {
     return {
       transform: `scale(${scaleRatio.value}) translate(${offsetX.value}px, ${offsetY.value}px)`,
       transition: `transform ${delay.value}s`,
@@ -32,6 +32,14 @@ export function usePinchContainer(props) {
       2 /
       scaleRatio.value;
     return distance > 0 ? distance : 0;
+  });
+  const borderReached = computed(() => {
+    return {
+      top: offsetY.value >= maxDistanceY.value,
+      bottom: offsetY.value <= -maxDistanceY.value,
+      left: offsetX.value >= maxDistanceX.value,
+      right: offsetX.value <= -maxDistanceX.value,
+    };
   });
 
   function handlePinch(e) {
@@ -120,8 +128,11 @@ export function usePinchContainer(props) {
   }
 
   function onResize(size) {
+    delay.value = 0;
     width.value = size.width;
     height.value = size.height;
+    distanceX.value = offsetX.value;
+    distanceY.value = offsetY.value;
   }
 
   function onContainerResize(size) {
@@ -130,7 +141,8 @@ export function usePinchContainer(props) {
   }
 
   return {
-    style,
+    pinchStyle,
+    borderReached,
     handlePinch,
     handlePan,
     onResize,

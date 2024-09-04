@@ -11,7 +11,7 @@ export function usePanContainer(props) {
   const distance = computed(() => -index.value * length.value);
   const length = computed(() => (props.vertical ? height.value : width.value));
 
-  const style = computed(() => {
+  const panStyle = computed(() => {
     return props.vertical
       ? {
           transform: `translate(0, ${offset.value}px)`,
@@ -69,13 +69,12 @@ export function usePanContainer(props) {
   }
 
   function onContainerResize(size) {
-    delay.value = 0;
     fullLength.value = props.vertical ? size.height : size.width;
-    offset.value = distance.value;
   }
 
   return {
-    style,
+    panStyle,
+    index,
     handlePan,
     onResize,
     onContainerResize,
