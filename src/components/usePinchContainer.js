@@ -48,8 +48,18 @@ export function usePinchContainer(props) {
       scaleRatio.value = temp;
     }
 
-    offsetX.value = distanceX.value + e.detail.global.deltaX / scaleRatio.value;
-    offsetY.value = distanceY.value + e.detail.global.deltaY / scaleRatio.value;
+    offsetX.value =
+      distanceX.value +
+      e.detail.global.deltaX / scaleRatio.value -
+      ((scaleRatio.value / scale.value - 1) *
+        (e.detail.global.center.x - width.value / 2)) /
+        scaleRatio.value;
+    offsetY.value =
+      distanceY.value +
+      e.detail.global.deltaY / scaleRatio.value -
+      ((scaleRatio.value / scale.value - 1) *
+        (e.detail.global.center.y - height.value / 2)) /
+        scaleRatio.value;
 
     if (e.type == "pinchend") {
       delay.value = 0.3;
