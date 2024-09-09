@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="window-height window-width overflow-hidden">
+  <q-layout class="overflow-hidden">
     <q-page-container class="full">
       <q-page class="full">
         <q-tab-panels v-model="tab" animated keep-alive class="full">

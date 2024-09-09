@@ -9,10 +9,13 @@
       @containerResize="onContainerResize"
     >
       <PinchContainer
-        class="full-window"
         v-for="(item, key) of imageDataList"
         :key="key"
         composable
+        :style="{
+          width: $q.screen.width + 'px',
+          height: $q.screen.height + 'px',
+        }"
         :pinchStyle="pinchContainerList[key]?.pinchStyle"
         @pinch="pinchDispatchHandler"
         @resize="pinchContainerList[key]?.onResize"

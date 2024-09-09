@@ -12,13 +12,20 @@
         v-for="key of 5"
         :key="key"
         :index="2"
-        class="full-window"
+        :style="{
+          width: $q.screen.width + 'px',
+          height: $q.screen.height + 'px',
+        }"
         vertical
       >
         <q-page
           v-for="key1 of 5"
           :key="key1"
-          class="full-window flex justify-center items-center"
+          :style="{
+            width: $q.screen.width + 'px',
+            height: $q.screen.height + 'px',
+          }"
+          class="flex justify-center items-center"
         >
           <div class="text-h1 text-bold text-center">
             col:{{ key }} row{{ key1 }}
@@ -30,9 +37,11 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 
+const $q = useQuasar();
 const { panStyle, handlePan, onResize, onContainerResize } = usePanContainer({
   index: 2,
   vertical: false,
