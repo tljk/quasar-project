@@ -2,7 +2,6 @@
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <PanContainer
       class="full"
-      vertical
       composable
       :panStyle="panStyle"
       @pan="panDispatchHandler"
@@ -15,7 +14,7 @@
         :key="key"
         composable
         :pinchStyle="pinchContainerList[key]?.pinchStyle"
-        @pinch="pinchContainerList[key]?.handlePinch"
+        @pinch="pinchDispatchHandler"
         @resize="pinchContainerList[key]?.onResize"
         @containerResize="pinchContainerList[key]?.onContainerResize"
       >
@@ -46,7 +45,7 @@ const $q = useQuasar();
 const { panStyle, index, handlePan, onResize, onContainerResize } =
   usePanContainer({
     index: 0,
-    vertical: true,
+    vertical: false,
     distanceThreshold: 0.6,
     velocityThreshold: 0.3,
   });
@@ -58,6 +57,7 @@ const cameraOptions = ref({
 });
 const pinchContainerList = ref([]);
 const panOption = ref(false);
+const pinching = ref(false);
 
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
@@ -75,6 +75,7 @@ async function takePicture() {
 }
 
 function panDispatchHandler(event) {
+  if (pinching.value) return;
   const borderReached = pinchContainerList.value[index.value]?.borderReached;
   if (borderReached && event.type == "panstart") {
     if (
@@ -97,6 +98,16 @@ function panDispatchHandler(event) {
 
   if (event.type == "panend") {
     panOption.value = false;
+  }
+}
+
+function pinchDispatchHandler(event) {
+  if (event.type == "pinchstart") {
+    pinching.value = true;
+  }
+  pinchContainerList.value[index.value]?.handlePinch(event);
+  if (event.type == "pinchend") {
+    pinching.value = false;
   }
 }
 </script>
