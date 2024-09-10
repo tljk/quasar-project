@@ -142,6 +142,9 @@ export function usePinchContainer(props) {
 
   return {
     pinchStyle,
+    scaleRatio,
+    offsetX,
+    offsetY,
     borderReached,
     handlePinch,
     handlePan,
