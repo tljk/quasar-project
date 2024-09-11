@@ -8,7 +8,7 @@
       <q-btn label="Go to barcode scan" to="/barcode-scan" />
       <q-btn label="Go to geolocation" to="/geolocation" />
       <q-btn label="Go to camera" to="/camera" />
-      <q-btn label="Go to image preview" to="/image-preview" />
+      <q-btn label="Go to grid preview" to="/grid-preview" />
       <q-btn label="Go to pinch container" to="/pinch-container" />
       <q-btn label="Go to pan container" to="/pan-container" />
       <q-btn label="Redirect to speed test" @click="toSpeedTest" />

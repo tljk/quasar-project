@@ -40,8 +40,8 @@ const routes = [
     component: () => import("pages/PanContainerPage.vue"),
   },
   {
-    path: "/image-preview",
-    component: () => import("pages/ImagePreviewPage.vue"),
+    path: "/grid-preview",
+    component: () => import("pages/GridPreviewPage.vue"),
   },
 
   // Always leave this as last one,

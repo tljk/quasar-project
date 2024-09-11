@@ -140,15 +140,27 @@ export function usePinchContainer(props) {
     containerHeight.value = size.height;
   }
 
+  function setScaleRatio(scaleValue) {
+    scale.value = scaleRatio.value = scaleValue;
+  }
+
+  function setOffsetX(offsetXValue) {
+    distanceX.value = offsetX.value = offsetXValue;
+  }
+
+  function setOffsetY(offsetYValue) {
+    distanceY.value = offsetY.value = offsetYValue;
+  }
+
   return {
     pinchStyle,
-    scaleRatio,
-    offsetX,
-    offsetY,
     borderReached,
     handlePinch,
     handlePan,
     onResize,
     onContainerResize,
+    setScaleRatio,
+    setOffsetX,
+    setOffsetY,
   };
 }

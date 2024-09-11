@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="fixed overflow-hidden">
+  <q-layout>
     <q-page-container>
       <router-view v-slot="{ Component, route }">
         <transition

@@ -1,16 +1,20 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
-    <div class="full flex justify-start content-start">
+  <q-page
+    class="fixed-full dark-mode scroll hide-scrollbar flex justify-start content-start"
+  >
+    <div
+      v-for="(item, key) of imageDataList"
+      :key="key"
+      style="width: 50vw; height: 50vw"
+    >
       <img
-        v-for="(item, key) of imageDataList"
-        :key="key"
+        class="full fit-cover"
         :src="item.webPath"
         :ref="
           (el) => {
             thumbRef[key] = el;
           }
         "
-        style="width: 50vw; height: 50vw; object-fit: cover"
         @click="togglePreview(key)"
       />
     </div>
@@ -18,15 +22,15 @@
     <div
       class="fullscreen no-pointer-events bg-black"
       style="transition: opacity 0.3s"
-      :style="{ opacity: transition ? 1 : 0 }"
+      :style="{ opacity: dimmed ? 1 : 0 }"
     ></div>
 
     <PanContainer
       class="fullscreen"
-      :class="{ 'no-pointer-events': !preview }"
+      :class="{ 'no-pointer-events': !showPreview }"
       composable
       :panStyle="panStyle"
-      :style="{ opacity: preview ? 1 : 0 }"
+      :style="{ opacity: showPreview ? 1 : 0 }"
       @pan="panDispatchHandler"
       @resize="onResize"
       @containerResize="onContainerResize"
@@ -46,7 +50,7 @@
         @click="togglePreview(key)"
       >
         <img
-          style="max-width: 100%; max-height: 100%; object-fit: cover"
+          class="full fit-cover"
           loading="lazy"
           :src="item.webPath"
           :ref="
@@ -89,10 +93,11 @@ const cameraOptions = ref({
 const pinchContainerList = ref([]);
 const panOption = ref(false);
 const pinching = ref(false);
-const thumbRef = ref([]);
-const fullRef = ref([]);
-const transition = ref(false);
-const preview = ref(false);
+const thumbRef = ref({});
+const fullRef = ref({});
+const dimmed = ref(false);
+const showPreview = ref(false);
+const cancelMorph = ref();
 
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
@@ -147,36 +152,47 @@ function pinchDispatchHandler(event) {
 }
 
 function togglePreview(key) {
-  const temp = preview.value;
-  morph({
-    from: preview.value ? fullRef.value[key] : thumbRef.value[key],
-    to: preview.value ? thumbRef.value[key] : fullRef.value[key],
+  const temp = showPreview.value;
+  if (!temp && dimmed.value && cancelMorph.value) {
+    cancelMorph.value();
+    cancelMorph.value = null;
+    dimmed.value = false;
+    return;
+  }
+  cancelMorph.value = morph({
+    from: showPreview.value ? fullRef.value[key] : thumbRef.value[key],
+    to: showPreview.value ? thumbRef.value[key] : fullRef.value[key],
     hideFromClone: true,
     keepToClone: true,
     resize: true,
     onToggle: () => {
-      if (temp) preview.value = false;
-      transition.value = !temp;
+      if (temp) showPreview.value = false; // exit preview
+      dimmed.value = !temp;
       setIndex(key);
+      pinchContainerList.value[key]?.setScaleRatio(1);
+      pinchContainerList.value[key]?.setOffsetX(0);
+      pinchContainerList.value[key]?.setOffsetY(0);
     },
-    onEnd: () => {
-      if (!temp) preview.value = true;
+    onEnd: (direction) => {
+      if (!temp && direction == "to") showPreview.value = true; // enter preview
     },
   });
 }
 
 onMounted(() => {
-  pinchContainerList.value.push(
-    usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-  );
-  pinchContainerList.value.push(
-    usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-  );
-  imageDataList.value.push({
-    webPath: "https://cdn.quasar.dev/img/parallax1.jpg",
-  });
-  imageDataList.value.push({
-    webPath: "https://cdn.quasar.dev/img/parallax2.jpg",
-  });
+  for (let i = 0; i < 2; i++) {
+    pinchContainerList.value.push(
+      usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
+    );
+    pinchContainerList.value.push(
+      usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
+    );
+    imageDataList.value.push({
+      webPath: "https://cdn.quasar.dev/img/parallax1.jpg",
+    });
+    imageDataList.value.push({
+      webPath: "https://cdn.quasar.dev/img/parallax2.jpg",
+    });
+  }
 });
 </script>
