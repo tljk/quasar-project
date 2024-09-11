@@ -72,11 +72,18 @@ export function usePanContainer(props) {
     fullLength.value = props.vertical ? size.height : size.width;
   }
 
+  function setIndex(indexValue, delayValue = 0) {
+    index.value = indexValue;
+    delay.value = delayValue;
+    offset.value = distance.value;
+  }
+
   return {
     panStyle,
     index,
     handlePan,
     onResize,
     onContainerResize,
+    setIndex,
   };
 }

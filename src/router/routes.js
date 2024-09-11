@@ -39,6 +39,10 @@ const routes = [
     path: "/pan-container",
     component: () => import("pages/PanContainerPage.vue"),
   },
+  {
+    path: "/image-preview",
+    component: () => import("pages/ImagePreviewPage.vue"),
+  },
 
   // Always leave this as last one,
   // but you can also remove it
