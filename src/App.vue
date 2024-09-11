@@ -18,7 +18,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
-import { PointerListener } from "contactjs";
+import { PointerListener } from "@/contactjs/contact";
 import { useAppStore } from "@/stores/appStore";
 import { checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";

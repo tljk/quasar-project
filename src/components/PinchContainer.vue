@@ -1,6 +1,6 @@
 <template>
   <div
-    class="overflow-hidden no-two-finger-zoom flex column no-wrap justify-center align-center"
+    class="overflow-hidden no-touch-events flex column no-wrap justify-center align-center"
     v-pinch="handlePinch"
     v-pan="handlePan"
   >

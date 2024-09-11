@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden" v-pan="handlePan">
+  <div class="overflow-hidden no-touch-events" v-pan="handlePan">
     <div
       class="flex no-wrap"
       :class="{ column: props.vertical, row: !props.vertical }"
