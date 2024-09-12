@@ -173,9 +173,6 @@ function togglePreview(key) {
       morphing.value = true;
       dimmed.value = !temp;
       setIndex(key);
-      pinchContainerList.value[key]?.setScaleRatio(1);
-      pinchContainerList.value[key]?.setOffsetX(0);
-      pinchContainerList.value[key]?.setOffsetY(0);
     },
     onEnd: (direction) => {
       if (!temp && dimmed.value && direction == "to") showPreview.value = true; // enter preview
