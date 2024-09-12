@@ -120,6 +120,8 @@ function panDispatchHandler(event) {
   const borderReached = pinchContainerList.value[index.value]?.borderReached;
   if (borderReached && event.type == "panstart") {
     if (
+      (borderReached.top && event.detail.live.direction == "down") ||
+      (borderReached.bottom && event.detail.live.direction == "up") ||
       (borderReached.left && event.detail.live.direction == "right") ||
       (borderReached.right && event.detail.live.direction == "left")
     ) {
@@ -132,12 +134,6 @@ function panDispatchHandler(event) {
   if (panOption.value) {
     handlePan(event);
   } else {
-    if (
-      event.type == "panend" &&
-      pinchContainerList.value[index.value]?.scaleRatio < 0.9
-    ) {
-      togglePreview(index.value);
-    }
     pinchContainerList.value[index.value]?.handlePan(event);
   }
 
