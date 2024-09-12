@@ -43,10 +43,7 @@ export function usePinchContainer(props) {
   });
 
   function handlePinch(e) {
-    if (e.type == "pinchstart") {
-      delay.value = 0;
-    }
-
+    delay.value = 0;
     const temp = scale.value * e.detail.global.scale;
     if (temp >= props.maxScaleRatio) {
       scaleRatio.value = props.maxScaleRatio;
@@ -97,30 +94,41 @@ export function usePinchContainer(props) {
 
   function handlePan(e) {
     delay.value = 0;
-    const tempX = distanceX.value + e.detail.global.deltaX / scale.value;
-    const tempY = distanceY.value + e.detail.global.deltaY / scale.value;
-
-    if (tempX > maxDistanceX.value) {
-      offsetX.value = maxDistanceX.value;
-    } else if (tempX < -maxDistanceX.value) {
-      offsetX.value = -maxDistanceX.value;
+    if (scale.value <= 1) {
+      scaleRatio.value =
+        scale.value *
+        (1 - e.detail.global.distance / Math.max(width.value, height.value));
+      offsetX.value =
+        distanceX.value + e.detail.global.deltaX / scaleRatio.value;
+      offsetY.value =
+        distanceY.value + e.detail.global.deltaY / scaleRatio.value;
     } else {
-      offsetX.value = tempX;
-    }
-    if (tempY > maxDistanceY.value) {
-      offsetY.value = maxDistanceY.value;
-    } else if (tempY < -maxDistanceY.value) {
-      offsetY.value = -maxDistanceY.value;
-    } else {
-      offsetY.value = tempY;
+      const tempX = distanceX.value + e.detail.global.deltaX / scale.value;
+      const tempY = distanceY.value + e.detail.global.deltaY / scale.value;
+      if (tempX > maxDistanceX.value) {
+        offsetX.value = maxDistanceX.value;
+      } else if (tempX < -maxDistanceX.value) {
+        offsetX.value = -maxDistanceX.value;
+      } else {
+        offsetX.value = tempX;
+      }
+      if (tempY > maxDistanceY.value) {
+        offsetY.value = maxDistanceY.value;
+      } else if (tempY < -maxDistanceY.value) {
+        offsetY.value = -maxDistanceY.value;
+      } else {
+        offsetY.value = tempY;
+      }
     }
 
     if (e.type == "panend") {
       delay.value = 0.3;
       if (scale.value <= 1) {
+        scale.value = scaleRatio.value = 1;
         distanceX.value = offsetX.value = 0;
         distanceY.value = offsetY.value = 0;
       } else {
+        scale.value = scaleRatio.value;
         distanceX.value = offsetX.value;
         distanceY.value = offsetY.value;
       }
@@ -155,6 +163,9 @@ export function usePinchContainer(props) {
   return {
     pinchStyle,
     borderReached,
+    scaleRatio,
+    offsetX,
+    offsetY,
     handlePinch,
     handlePan,
     onResize,
