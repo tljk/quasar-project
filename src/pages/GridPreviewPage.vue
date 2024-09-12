@@ -3,6 +3,7 @@
     class="fixed-full dark-mode scroll hide-scrollbar flex justify-start content-start"
   >
     <div
+      v-tap="() => togglePreview(key)"
       v-for="(item, key) of imageDataList"
       :key="key"
       style="width: 50vw; height: 50vw"
@@ -15,7 +16,6 @@
             thumbRef[key] = el;
           }
         "
-        @click="togglePreview(key)"
       />
     </div>
 
@@ -36,6 +36,7 @@
       @containerResize="onContainerResize"
     >
       <PinchContainer
+        v-tap="() => togglePreview(key)"
         v-for="(item, key) of imageDataList"
         :key="key"
         composable
@@ -47,7 +48,6 @@
         @pinch="pinchDispatchHandler"
         @resize="pinchContainerList[key]?.onResize"
         @containerResize="pinchContainerList[key]?.onContainerResize"
-        @click="togglePreview(key)"
       >
         <img
           class="full fit-cover"
@@ -97,6 +97,7 @@ const thumbRef = ref({});
 const fullRef = ref({});
 const dimmed = ref(false);
 const showPreview = ref(false);
+const morphing = ref(false);
 const cancelMorph = ref();
 
 async function takePicture() {
@@ -159,6 +160,8 @@ function togglePreview(key) {
     dimmed.value = false;
     return;
   }
+  if (morphing.value) return;
+
   cancelMorph.value = morph({
     from: showPreview.value ? fullRef.value[key] : thumbRef.value[key],
     to: showPreview.value ? thumbRef.value[key] : fullRef.value[key],
@@ -167,6 +170,7 @@ function togglePreview(key) {
     resize: true,
     onToggle: () => {
       if (temp) showPreview.value = false; // exit preview
+      morphing.value = true;
       dimmed.value = !temp;
       setIndex(key);
       pinchContainerList.value[key]?.setScaleRatio(1);
@@ -174,7 +178,9 @@ function togglePreview(key) {
       pinchContainerList.value[key]?.setOffsetY(0);
     },
     onEnd: (direction) => {
-      if (!temp && direction == "to") showPreview.value = true; // enter preview
+      if (!temp && dimmed.value && direction == "to") showPreview.value = true; // enter preview
+      cancelMorph.value = null;
+      morphing.value = false;
     },
   });
 }
