@@ -27,8 +27,10 @@
           Network status: {{ appStore.networkStatus }}
         </q-card-section>
 
-        <q-card-actions v-if="appStore.nextBundleId">
-          <q-btn label="Update" @click="LiveUpdate.reload()"></q-btn>
+        <q-card-actions
+          v-if="appStore.nextBundleId || appStore.serviceWorker?.updatefound"
+        >
+          <q-btn label="Update" @click="update"></q-btn>
         </q-card-actions>
         <q-card-actions v-if="appStore.currentBundleId">
           <q-btn label="Reset" @click="LiveUpdate.reset()"></q-btn>
@@ -43,4 +45,18 @@ import { useAppStore } from "@/stores/appStore";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 
 const appStore = useAppStore();
+
+navigator.serviceWorker?.addEventListener("controllerchange", () => {
+  window.location.reload();
+});
+
+function update() {
+  if (appStore.quasarMode == "pwa") {
+    navigator.serviceWorker?.ready.then((registration) => {
+      registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+    });
+  } else if (appStore.quasarMode == "capacitor") {
+    LiveUpdate.checkForUpdate();
+  }
+}
 </script>
