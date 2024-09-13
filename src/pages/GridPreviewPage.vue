@@ -29,11 +29,11 @@
       class="fullscreen"
       :class="{ 'no-pointer-events': !showPreview }"
       composable
-      :panStyle="panStyle"
+      :panStyle="panContainer?.panStyle"
       :style="{ opacity: showPreview ? 1 : 0 }"
       @pan="panDispatchHandler"
-      @resize="onResize"
-      @containerResize="onContainerResize"
+      @resize="panContainer?.onResize"
+      @containerResize="panContainer?.onContainerResize"
     >
       <PinchContainer
         v-tap="() => togglePreview(key)"
@@ -44,10 +44,18 @@
           width: $q.screen.width + 'px',
           height: $q.screen.height + 'px',
         }"
-        :pinchStyle="pinchContainerList[key]?.pinchStyle"
+        :pinchStyle="
+          panContainer?.index == key
+            ? pinchContainer?.pinchStyle
+            : defaultPinchStyle
+        "
         @pinch="pinchDispatchHandler"
-        @resize="pinchContainerList[key]?.onResize"
-        @containerResize="pinchContainerList[key]?.onContainerResize"
+        @resize="pinchContainer?.onResize"
+        @containerResize="
+          (size) => {
+            resizeDispatchHandler(size, key);
+          }
+        "
       >
         <img
           class="full fit-cover"
@@ -68,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useQuasar, morph } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
@@ -77,20 +85,31 @@ import { usePanContainer } from "@/components/usePanContainer";
 import { usePinchContainer } from "@/components/usePinchContainer";
 
 const $q = useQuasar();
-const { panStyle, index, handlePan, onResize, onContainerResize, setIndex } =
+const panContainer = ref(
   usePanContainer({
     index: 0,
     vertical: false,
     distanceThreshold: 0.6,
     velocityThreshold: 0.3,
-  });
+  })
+);
+const pinchContainer = ref(
+  usePinchContainer({
+    maxScaleRatio: 10,
+    minScaleRatio: 0.1,
+  })
+);
+const pinchContainerSizeList = ref({});
+const defaultPinchStyle = ref({
+  transform: "scale(1) translate(0px, 0px)",
+  transition: "transform 0.3s",
+});
 const imageDataList = ref([]);
 const cameraOptions = ref({
   quality: 90,
   direction: "REAR",
   resultType: CameraResultType.Uri,
 });
-const pinchContainerList = ref([]);
 const panOption = ref(false);
 const pinching = ref(false);
 const thumbRef = ref({});
@@ -100,12 +119,16 @@ const showPreview = ref(false);
 const morphing = ref(false);
 const cancelMorph = ref();
 
+watch(
+  () => panContainer.value?.index,
+  () => {
+    resetPinchContainer();
+  }
+);
+
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
     .then((image) => {
-      pinchContainerList.value.push(
-        usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-      );
       imageDataList.value.push(image);
     })
     .catch((error) => {
@@ -117,7 +140,7 @@ async function takePicture() {
 
 function panDispatchHandler(event) {
   if (pinching.value) return;
-  const borderReached = pinchContainerList.value[index.value]?.borderReached;
+  const borderReached = pinchContainer.value?.borderReached;
   if (borderReached && event.type == "panstart") {
     if (
       (borderReached.top && event.detail.live.direction == "down") ||
@@ -132,9 +155,9 @@ function panDispatchHandler(event) {
   }
 
   if (panOption.value) {
-    handlePan(event);
+    panContainer.value?.handlePan(event);
   } else {
-    pinchContainerList.value[index.value]?.handlePan(event);
+    pinchContainer.value?.handlePan(event);
   }
 
   if (event.type == "panend") {
@@ -146,9 +169,16 @@ function pinchDispatchHandler(event) {
   if (event.type == "pinchstart") {
     pinching.value = true;
   }
-  pinchContainerList.value[index.value]?.handlePinch(event);
+  pinchContainer.value?.handlePinch(event);
   if (event.type == "pinchend") {
     pinching.value = false;
+  }
+}
+
+function resizeDispatchHandler(size, key) {
+  pinchContainerSizeList.value[key] = size;
+  if (key == panContainer.value?.index) {
+    pinchContainer.value?.onContainerResize(size);
   }
 }
 
@@ -172,7 +202,8 @@ function togglePreview(key) {
       if (temp) showPreview.value = false; // exit preview
       morphing.value = true;
       dimmed.value = !temp;
-      setIndex(key);
+      resetPinchContainer();
+      panContainer.value?.setIndex(key);
     },
     onEnd: (direction) => {
       if (!temp && dimmed.value && direction == "to") showPreview.value = true; // enter preview
@@ -182,14 +213,17 @@ function togglePreview(key) {
   });
 }
 
+function resetPinchContainer() {
+  pinchContainer.value?.setScaleRatio(1);
+  pinchContainer.value?.setOffsetX(0);
+  pinchContainer.value?.setOffsetY(0);
+  pinchContainer.value?.onContainerResize(
+    pinchContainerSizeList.value[panContainer.value?.index]
+  );
+}
+
 onMounted(() => {
   for (let i = 0; i < 2; i++) {
-    pinchContainerList.value.push(
-      usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-    );
-    pinchContainerList.value.push(
-      usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-    );
     imageDataList.value.push({
       webPath: "https://cdn.quasar.dev/img/parallax1.jpg",
     });

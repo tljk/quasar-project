@@ -11,12 +11,12 @@ export function usePinchContainer(props) {
   const offsetX = ref(0);
   const distanceY = ref(0);
   const offsetY = ref(0);
-  const delay = ref(0);
+  const duration = ref(0);
 
   const pinchStyle = computed(() => {
     return {
       transform: `scale(${scaleRatio.value}) translate(${offsetX.value}px, ${offsetY.value}px)`,
-      transition: `transform ${delay.value}s`,
+      transition: `transform ${duration.value}ms`,
     };
   });
   const maxDistanceX = computed(() => {
@@ -43,10 +43,7 @@ export function usePinchContainer(props) {
   });
 
   function handlePinch(e) {
-    if (e.type == "pinchstart") {
-      delay.value = 0;
-    }
-
+    setDuration(0);
     const temp = scale.value * e.detail.global.scale;
     if (temp >= props.maxScaleRatio) {
       scaleRatio.value = props.maxScaleRatio;
@@ -70,7 +67,7 @@ export function usePinchContainer(props) {
         scaleRatio.value;
 
     if (e.type == "pinchend") {
-      delay.value = 0.3;
+      setDuration(300);
       if (scaleRatio.value <= 1) {
         scale.value = scaleRatio.value = 1;
         distanceX.value = offsetX.value = 0;
@@ -96,7 +93,7 @@ export function usePinchContainer(props) {
   }
 
   function handlePan(e) {
-    delay.value = 0;
+    setDuration(0);
     const tempX = distanceX.value + e.detail.global.deltaX / scale.value;
     const tempY = distanceY.value + e.detail.global.deltaY / scale.value;
 
@@ -116,7 +113,7 @@ export function usePinchContainer(props) {
     }
 
     if (e.type == "panend") {
-      delay.value = 0.3;
+      setDuration(300);
       if (scale.value <= 1) {
         distanceX.value = offsetX.value = 0;
         distanceY.value = offsetY.value = 0;
@@ -128,7 +125,6 @@ export function usePinchContainer(props) {
   }
 
   function onResize(size) {
-    delay.value = 0;
     width.value = size.width;
     height.value = size.height;
     distanceX.value = offsetX.value;
@@ -152,6 +148,14 @@ export function usePinchContainer(props) {
     distanceY.value = offsetY.value = offsetYValue;
   }
 
+  function setDuration(durationValue) {
+    duration.value = durationValue;
+    if (durationValue <= 0) return;
+    setTimeout(() => {
+      duration.value = 0;
+    }, durationValue);
+  }
+
   return {
     pinchStyle,
     borderReached,
@@ -162,5 +166,6 @@ export function usePinchContainer(props) {
     setScaleRatio,
     setOffsetX,
     setOffsetY,
+    setDuration,
   };
 }

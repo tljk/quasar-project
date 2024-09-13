@@ -5,7 +5,7 @@ export function usePanContainer(props) {
   const width = ref(0);
   const height = ref(0);
   const offset = ref(0);
-  const delay = ref(0);
+  const duration = ref(0);
   const fullLength = ref(0);
 
   const distance = computed(() => -index.value * length.value);
@@ -15,16 +15,16 @@ export function usePanContainer(props) {
     return props.vertical
       ? {
           transform: `translate(0, ${offset.value}px)`,
-          transition: `transform ${delay.value}s`,
+          transition: `transform ${duration.value}ms`,
         }
       : {
           transform: `translate(${offset.value}px, 0)`,
-          transition: `transform ${delay.value}s`,
+          transition: `transform ${duration.value}ms`,
         };
   });
 
   function handlePan(e) {
-    delay.value = 0;
+    setDuration(0);
     const tempOffset = props.vertical
       ? e.detail.global.deltaY
       : e.detail.global.deltaX;
@@ -41,9 +41,9 @@ export function usePanContainer(props) {
       const velocity = props.vertical
         ? e.detail.live.speedY
         : e.detail.live.speedX;
-      const time =
-        (length.value - Math.abs(tempOffset)) / Math.abs(velocity) / 666;
-      delay.value = time > 0.3 ? 0.3 : time;
+      const durationValue =
+        (length.value - Math.abs(tempOffset)) / Math.abs(velocity);
+      setDuration(durationValue > 300 ? 300 : durationValue);
       if (
         velocity > props.velocityThreshold ||
         tempOffset > length.value * props.distanceThreshold
@@ -62,7 +62,6 @@ export function usePanContainer(props) {
   }
 
   function onResize(size) {
-    delay.value = 0;
     width.value = size.width;
     height.value = size.height;
     offset.value = distance.value;
@@ -72,10 +71,17 @@ export function usePanContainer(props) {
     fullLength.value = props.vertical ? size.height : size.width;
   }
 
-  function setIndex(indexValue, delayValue = 0) {
+  function setIndex(indexValue) {
     index.value = indexValue;
-    delay.value = delayValue;
     offset.value = distance.value;
+  }
+
+  function setDuration(durationValue) {
+    duration.value = durationValue;
+    if (durationValue <= 0) return;
+    setTimeout(() => {
+      duration.value = 0;
+    }, durationValue);
   }
 
   return {
@@ -85,5 +91,6 @@ export function usePanContainer(props) {
     onResize,
     onContainerResize,
     setIndex,
+    setDuration,
   };
 }
