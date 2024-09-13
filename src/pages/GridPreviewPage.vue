@@ -19,11 +19,7 @@
       />
     </div>
 
-    <div
-      class="fullscreen no-pointer-events bg-black"
-      style="transition: opacity 0.3s"
-      :style="{ opacity: dimmed ? 1 : 0 }"
-    ></div>
+    <div class="fullscreen no-pointer-events" :style="dimmedStyle"></div>
 
     <PanContainer
       class="fullscreen"
@@ -61,6 +57,7 @@
           class="full fit-cover"
           loading="lazy"
           :src="item.webPath"
+          :style="panContainer?.index == key ? previewStyle : {}"
           :ref="
             (el) => {
               fullRef[key] = el;
@@ -76,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useQuasar, morph } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
@@ -110,14 +107,31 @@ const cameraOptions = ref({
   direction: "REAR",
   resultType: CameraResultType.Uri,
 });
-const panOption = ref(false);
+const panOption = ref(""); // pan, pinch or preview
 const pinching = ref(false);
 const thumbRef = ref({});
 const fullRef = ref({});
-const dimmed = ref(false);
 const showPreview = ref(false);
 const morphing = ref(false);
 const cancelMorph = ref();
+const scaleRatio = ref(1);
+const offsetX = ref(0);
+const offsetY = ref(0);
+const duration = ref(0);
+const dimmed = ref(0);
+
+const previewStyle = computed(() => {
+  return {
+    transform: `scale(${scaleRatio.value}) translate(${offsetX.value}px, ${offsetY.value}px)`,
+    transition: `transform ${duration.value}ms`,
+  };
+});
+const dimmedStyle = computed(() => {
+  return {
+    "background-color": `rgba(0, 0, 0, ${dimmed.value})`,
+    transition: `background-color ${duration.value}ms`,
+  };
+});
 
 watch(
   () => panContainer.value?.index,
@@ -143,25 +157,31 @@ function panDispatchHandler(event) {
   const borderReached = pinchContainer.value?.borderReached;
   if (borderReached && event.type == "panstart") {
     if (
-      (borderReached.top && event.detail.live.direction == "down") ||
-      (borderReached.bottom && event.detail.live.direction == "up") ||
+      ((borderReached.top && event.detail.live.direction == "down") ||
+        (borderReached.bottom && event.detail.live.direction == "up")) &&
+      pinchContainer.value?.scaleRatio == 1
+    ) {
+      panOption.value = "preview";
+    } else if (
       (borderReached.left && event.detail.live.direction == "right") ||
       (borderReached.right && event.detail.live.direction == "left")
     ) {
-      panOption.value = true;
+      panOption.value = "pan";
     } else {
-      panOption.value = false;
+      panOption.value = "pinch";
     }
   }
 
-  if (panOption.value) {
+  if (panOption.value == "pan") {
     panContainer.value?.handlePan(event);
-  } else {
+  } else if (panOption.value == "pinch") {
     pinchContainer.value?.handlePan(event);
+  } else if (panOption.value == "preview") {
+    handlePreviewPan(event);
   }
 
   if (event.type == "panend") {
-    panOption.value = false;
+    panOption.value = "";
   }
 }
 
@@ -184,10 +204,11 @@ function resizeDispatchHandler(size, key) {
 
 function togglePreview(key) {
   const temp = showPreview.value;
-  if (!temp && dimmed.value && cancelMorph.value) {
+  if (!temp && cancelMorph.value) {
     cancelMorph.value();
     cancelMorph.value = null;
-    dimmed.value = false;
+    dimmed.value = 0;
+    setDuration(300);
     return;
   }
   if (morphing.value) return;
@@ -201,12 +222,13 @@ function togglePreview(key) {
     onToggle: () => {
       if (temp) showPreview.value = false; // exit preview
       morphing.value = true;
-      dimmed.value = !temp;
+      dimmed.value = temp ? 0 : 1;
       resetPinchContainer();
       panContainer.value?.setIndex(key);
+      setDuration(300);
     },
-    onEnd: (direction) => {
-      if (!temp && dimmed.value && direction == "to") showPreview.value = true; // enter preview
+    onEnd: (direction, aborted) => {
+      if (!temp && direction == "to" && !aborted) showPreview.value = true; // enter preview
       cancelMorph.value = null;
       morphing.value = false;
     },
@@ -220,6 +242,36 @@ function resetPinchContainer() {
   pinchContainer.value?.onContainerResize(
     pinchContainerSizeList.value[panContainer.value?.index]
   );
+  scaleRatio.value = 1;
+  offsetX.value = 0;
+  offsetY.value = 0;
+}
+
+function handlePreviewPan(e) {
+  setDuration(0);
+  scaleRatio.value =
+    1 - e.detail.global.distance / Math.max($q.screen.width, $q.screen.height);
+  dimmed.value = scaleRatio.value;
+  offsetX.value = e.detail.global.deltaX / scaleRatio.value;
+  offsetY.value = e.detail.global.deltaY / scaleRatio.value;
+
+  if (e.type == "panend") {
+    if (scaleRatio.value < 0.8) {
+      togglePreview(panContainer.value?.index);
+    } else {
+      dimmed.value = 1;
+      resetPinchContainer();
+      setDuration(300);
+    }
+  }
+}
+
+function setDuration(durationValue) {
+  duration.value = durationValue;
+  if (durationValue <= 0) return;
+  setTimeout(() => {
+    duration.value = 0;
+  }, durationValue);
 }
 
 onMounted(() => {
