@@ -11,8 +11,7 @@
       <q-btn label="Go to grid preview" to="/grid-preview" />
       <q-btn label="Go to pinch container" to="/pinch-container" />
       <q-btn label="Go to pan container" to="/pan-container" />
-      <q-btn label="Redirect to speed test" @click="toSpeedTest" />
-      <div v-if="url">Speed {{ url.split("=")[1] }}</div>
+
       <q-btn-dropdown
         label="Redirect to google map"
         split
@@ -32,6 +31,17 @@
           </q-item>
         </q-list>
       </q-btn-dropdown>
+
+      <q-btn label="Redirect to speed test" @click="toSpeedTest" />
+      <div v-if="url">Speed {{ url.split("=")[1] }}</div>
+      <q-btn
+        label="Redirect to video test"
+        @click="openWebView('https://test-videos.co.uk/bigbuckbunny/mp4-h265')"
+      />
+      <q-btn
+        label="Redirect to ufo test"
+        @click="openWebView('https://www.testufo.com/')"
+      />
     </div>
   </q-page>
 </template>
@@ -91,6 +101,15 @@ function toGoogleMap() {
         InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
       }
     });
+  } else {
+    window.open(URLScheme, "_blank");
+  }
+}
+
+function openWebView(url) {
+  const URLScheme = url;
+  if (appStore.device.capacitor) {
+    InAppBrowser.openWebView({ url: URLScheme, toolbarType: "blank" });
   } else {
     window.open(URLScheme, "_blank");
   }
