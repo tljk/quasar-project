@@ -19,6 +19,7 @@
     "@capacitor/status-bar": "^6.0.1",
     "@capawesome/capacitor-live-update": "^6.3.0",
     "@capgo/inappbrowser": "^6.4.4",
+    "capacitor-webview-update": "^0.0.1",
     "ln-capacitor-wifi": "^0.3.0-beta"
   }
 }

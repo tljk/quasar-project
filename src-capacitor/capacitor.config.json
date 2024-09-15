@@ -7,6 +7,14 @@
       "launchAutoHide": false,
       "splashFullScreen": true,
       "splashImmersive": true
+    },
+    "CapacitorWebviewUpdate": {
+      "packageName": "com.google.android.webview",
+      "versionName": "122.0.6261.64",
+      "arm": "https://github.com/tljk/quasar-project/releases/download/webview/com.google.android.webview_122.0.6261.64_armeabi-v7a.zip",
+      "arm64": "https://github.com/tljk/quasar-project/releases/download/webview/com.google.android.webview_122.0.6261.64_arm64-v8a.zip",
+      "x86": "https://github.com/tljk/quasar-project/releases/download/webview/com.google.android.webview_122.0.6261.64_x86.zip",
+      "x86_64": "https://github.com/tljk/quasar-project/releases/download/webview/com.google.android.webview_122.0.6261.64_x86_64.zip"
     }
   }
 }
