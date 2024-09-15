@@ -1,6 +1,6 @@
 {
   "name": "quasar-project",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "A Quasar Project",
   "productName": "Quasar App",
   "author": "tanglinchuanz@163.com <tanglinchuanz@163.com>",
@@ -17,7 +17,8 @@
     "build:android": "quasar build -m capacitor -T android --ide",
     "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
     "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
-    "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json"
+    "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
+    "version": "npm install && cd src-capacitor && npm install && cd .."
   },
   "dependencies": {
     "@aparajita/capacitor-dark-mode": "^5.0.2",
