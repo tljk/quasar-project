@@ -9,6 +9,7 @@
       "splashImmersive": true
     },
     "CapacitorWebviewUpdate": {
+      "sourceType": "remote",
       "packageName": "com.google.android.webview",
       "versionName": "122.0.6261.64",
       "arm": "https://github.com/tljk/quasar-project/releases/download/webview/com.google.android.webview_122.0.6261.64_armeabi-v7a.zip",

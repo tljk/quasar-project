@@ -26,6 +26,18 @@
         <q-card-section v-if="appStore.networkStatus">
           Network status: {{ appStore.networkStatus }}
         </q-card-section>
+        <q-card-section v-if="appStore.instruction">
+          Instruction: {{ appStore.instruction }}
+        </q-card-section>
+        <q-card-section v-if="appStore.systemWebview">
+          System webview: {{ appStore.systemWebview }}
+        </q-card-section>
+        <q-card-section v-if="appStore.upgradeWebview">
+          Upgrade webview: {{ appStore.upgradeWebview }}
+        </q-card-section>
+        <q-card-section v-if="appStore.upgradeProcess">
+          Upgrade process: {{ appStore.upgradeProcess }}
+        </q-card-section>
 
         <q-card-actions
           v-if="appStore.nextBundleId || appStore.serviceWorker?.updatefound"
@@ -41,14 +53,12 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import { useAppStore } from "@/stores/appStore";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
+import { CapacitorWebviewUpdate } from "capacitor-webview-update";
 
 const appStore = useAppStore();
-
-navigator.serviceWorker?.addEventListener("controllerchange", () => {
-  window.location.reload();
-});
 
 function update() {
   if (appStore.quasarMode == "pwa") {
@@ -59,4 +69,19 @@ function update() {
     LiveUpdate.checkForUpdate();
   }
 }
+
+onMounted(() => {
+  navigator.serviceWorker?.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+  CapacitorWebviewUpdate.getCurrentInstruction().then(({ instruction }) => {
+    appStore.setInstruction(instruction);
+  });
+  CapacitorWebviewUpdate.getSystemWebView().then((value) => {
+    appStore.setSystemWebview(value);
+  });
+  CapacitorWebviewUpdate.getUpgradeWebView().then((value) => {
+    appStore.setUpgradeWebview(value);
+  });
+});
 </script>

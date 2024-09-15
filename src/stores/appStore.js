@@ -13,6 +13,11 @@ export const useAppStore = defineStore("app", {
     nextBundleId: undefined,
     serviceWorker: undefined,
     networkStatus: undefined,
+
+    instruction: undefined,
+    systemWebview: undefined,
+    upgradeWebview: undefined,
+    upgradeProcess: undefined,
   }),
   getters: {
     getVersion() {
@@ -42,6 +47,18 @@ export const useAppStore = defineStore("app", {
     getNetworkStatus() {
       return this.networkStatus;
     },
+    getInstruction() {
+      return this.instruction;
+    },
+    getSystemWebview() {
+      return this.systemWebview;
+    },
+    getUpgradeWebview() {
+      return this.upgradeWebview;
+    },
+    getUpgradeProcess() {
+      return this.upgradeProcess;
+    },
   },
   actions: {
     setCurrentBundleId(bundleId) {
@@ -59,6 +76,18 @@ export const useAppStore = defineStore("app", {
     },
     setNetworkStatus(value) {
       this.networkStatus = value;
+    },
+    setInstruction(value) {
+      this.instruction = value;
+    },
+    setSystemWebview(value) {
+      this.systemWebview = value;
+    },
+    setUpgradeWebview(value) {
+      this.upgradeWebview = value;
+    },
+    setUpgradeProcess(value) {
+      this.upgradeProcess = value;
     },
   },
 });
