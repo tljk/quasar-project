@@ -29,7 +29,6 @@ import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Network } from "@capacitor/network";
-import { CapacitorWebviewUpdate } from "capacitor-webview-update";
 
 const $q = useQuasar();
 const appStore = useAppStore();
@@ -78,26 +77,6 @@ onMounted(async () => {
     appStore.setCurrentBundleId((await LiveUpdate.getBundle()).bundleId);
 
     checkForUpdates(appStore.networkStatus?.connectionType == "wifi");
-
-    if (appStore.device?.platform == "android") {
-      CapacitorWebviewUpdate.addListener("upgradeProcess", ({ percent }) => {
-        appStore.setUpgradeProcess((percent * 100).toFixed(2) + "%");
-      });
-      CapacitorWebviewUpdate.addListener("upgradeError", ({ message }) => {
-        if (message == "WebView only can replace before System WebView init") {
-          CapacitorWebviewUpdate.applyWebView().then(() => {
-            appStore.setUpgradeProcess("ready");
-          });
-        } else {
-          console.error(message);
-        }
-      });
-      CapacitorWebviewUpdate.compareVersion().then(({ result }) => {
-        if (result < 0 && appStore.networkStatus?.connectionType == "wifi") {
-          CapacitorWebviewUpdate.upgradeWebView();
-        }
-      });
-    }
   }
 });
 </script>

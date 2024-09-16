@@ -45,7 +45,10 @@
           <q-btn label="Update" @click="update"></q-btn>
         </q-card-actions>
         <q-card-actions v-if="appStore.currentBundleId">
-          <q-btn label="Reset" @click="LiveUpdate.reset()"></q-btn>
+          <q-btn label="Reset" @click="reset"></q-btn>
+        </q-card-actions>
+        <q-card-actions v-if="appStore.device?.platform == 'android'">
+          <q-btn label="Upgrade webview" @click="upgradeWebview"></q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -70,18 +73,51 @@ function update() {
   }
 }
 
+function reset() {
+  if (appStore.quasarMode == "capacitor") {
+    LiveUpdate.reset();
+  }
+}
+
+function upgradeWebview() {
+  if (appStore.device?.platform == "android") {
+    CapacitorWebviewUpdate.compareVersion().then(({ result }) => {
+      if (result < 0 && appStore.networkStatus?.connectionType == "wifi") {
+        CapacitorWebviewUpdate.upgradeWebView();
+      }
+    });
+  }
+}
+
 onMounted(() => {
-  navigator.serviceWorker?.addEventListener("controllerchange", () => {
-    window.location.reload();
-  });
-  CapacitorWebviewUpdate.getCurrentInstruction().then(({ instruction }) => {
-    appStore.setInstruction(instruction);
-  });
-  CapacitorWebviewUpdate.getSystemWebView().then((value) => {
-    appStore.setSystemWebview(value);
-  });
-  CapacitorWebviewUpdate.getUpgradeWebView().then((value) => {
-    appStore.setUpgradeWebview(value);
-  });
+  if (appStore.quasarMode == "pwa") {
+    navigator.serviceWorker?.addEventListener("controllerchange", () => {
+      window.location.reload();
+    });
+  }
+
+  if (appStore.device?.platform == "android") {
+    CapacitorWebviewUpdate.getCurrentInstruction().then(({ instruction }) => {
+      appStore.setInstruction(instruction);
+    });
+    CapacitorWebviewUpdate.getSystemWebView().then((value) => {
+      appStore.setSystemWebview(value);
+    });
+    CapacitorWebviewUpdate.getUpgradeWebView().then((value) => {
+      appStore.setUpgradeWebview(value);
+    });
+    CapacitorWebviewUpdate.addListener("upgradeProcess", ({ percent }) => {
+      appStore.setUpgradeProcess((percent * 100).toFixed(2) + "%");
+    });
+    CapacitorWebviewUpdate.addListener("upgradeError", ({ message }) => {
+      if (message == "WebView only can replace before System WebView init") {
+        CapacitorWebviewUpdate.applyWebView().then(() => {
+          appStore.setUpgradeProcess("ready");
+        });
+      } else {
+        console.error(message);
+      }
+    });
+  }
 });
 </script>
