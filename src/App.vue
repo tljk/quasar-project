@@ -5,6 +5,10 @@
         <transition
           :enter-active-class="route.meta.enterActiveClass"
           :leave-active-class="route.meta.leaveActiveClass"
+          @before-enter="addWillChange"
+          @before-leave="addWillChange"
+          @after-enter="removeWillChange"
+          @after-leave="removeWillChange"
         >
           <keep-alive>
             <component :is="Component" :key="route.path" />
@@ -39,6 +43,13 @@ const darkBackground = "#121212";
 const backgroundColor = computed(() =>
   $q.dark.isActive ? darkBackground : lightBackground
 );
+
+function addWillChange(el) {
+  el.style.willChange = "transform, opacity";
+}
+function removeWillChange(el) {
+  el.style.willChange = "auto";
+}
 
 onMounted(async () => {
   pointerListener.value = new PointerListener(document.getElementById("q-app"));

@@ -19,7 +19,10 @@
       />
     </div>
 
-    <div class="fullscreen no-pointer-events" :style="dimmedStyle"></div>
+    <div
+      class="fullscreen no-pointer-events bg-black"
+      :style="dimmedStyle"
+    ></div>
 
     <PanContainer
       class="fullscreen"
@@ -128,8 +131,8 @@ const previewStyle = computed(() => {
 });
 const dimmedStyle = computed(() => {
   return {
-    "background-color": `rgba(0, 0, 0, ${dimmed.value})`,
-    transition: `background-color ${duration.value}ms`,
+    opacity: dimmed.value,
+    transition: `opacity ${duration.value}ms`,
   };
 });
 

@@ -72,6 +72,7 @@
   z-index: 10000;
   background-color: rgba(0, 0, 0, 0.5);
   animation: fadeOut 300ms;
+  will-change: opacity;
 }
 
 @keyframes fadeIn {
@@ -93,6 +94,7 @@
   z-index: 10000;
   background-color: rgba(0, 0, 0, 0.5);
   animation: fadeIn 300ms;
+  will-change: opacity;
 }
 
 .no-touch-events {
