@@ -50,7 +50,7 @@
         <q-card-actions
           v-if="
             appStore.device?.platform == 'android' &&
-            webviewCompareVersionResult < 0
+            appStore.upgradeProcess == 'required'
           "
         >
           <q-btn label="Upgrade webview" @click="upgradeWebview"></q-btn>
@@ -67,7 +67,6 @@ import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { CapacitorWebviewUpdate } from "capacitor-webview-update";
 
 const appStore = useAppStore();
-const webviewCompareVersionResult = ref(0);
 
 function update() {
   if (appStore.quasarMode == "pwa") {
@@ -88,7 +87,7 @@ function reset() {
 function upgradeWebview() {
   if (
     appStore.device?.platform == "android" &&
-    webviewCompareVersionResult.value < 0
+    appStore.upgradeProcess == "required"
   ) {
     CapacitorWebviewUpdate.upgradeWebView();
   }
@@ -112,7 +111,9 @@ onMounted(() => {
       appStore.setUpgradeWebview(value);
     });
     CapacitorWebviewUpdate.compareVersion().then(({ result }) => {
-      webviewCompareVersionResult.value = result;
+      if (result < 0) {
+        appStore.setUpgradeProcess("required");
+      }
     });
     CapacitorWebviewUpdate.addListener("upgradeProcess", ({ percent }) => {
       appStore.setUpgradeProcess((percent * 100).toFixed(2) + "%");
