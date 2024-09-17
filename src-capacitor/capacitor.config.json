@@ -3,11 +3,6 @@
   "appName": "Quasar App",
   "webDir": "www",
   "plugins": {
-    "SplashScreen": {
-      "launchAutoHide": false,
-      "splashFullScreen": true,
-      "splashImmersive": true
-    },
     "CapacitorWebviewUpdate": {
       "sourceType": "remote",
       "packageName": "com.google.android.webview",

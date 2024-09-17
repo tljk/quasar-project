@@ -27,7 +27,6 @@ import { useAppStore } from "@/stores/appStore";
 import { checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
-import { SplashScreen } from "@capacitor/splash-screen";
 import { Network } from "@capacitor/network";
 
 const $q = useQuasar();
@@ -71,7 +70,6 @@ onMounted(async () => {
   );
 
   if (appStore.device?.capacitor) {
-    await SplashScreen.hide();
     await LiveUpdate.ready();
 
     appStore.setCurrentBundleId((await LiveUpdate.getBundle()).bundleId);
