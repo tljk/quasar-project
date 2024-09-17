@@ -10,7 +10,7 @@
           @after-enter="removeWillChange"
           @after-leave="removeWillChange"
         >
-          <keep-alive>
+          <keep-alive :include="routeStore.cachedViews">
             <component :is="Component" :key="route.path" />
           </keep-alive>
         </transition>
@@ -24,6 +24,7 @@ import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { PointerListener } from "@/contactjs/contact";
 import { useAppStore } from "@/stores/appStore";
+import { useRouteStore } from "@/stores/routeStore";
 import { checkForUpdates } from "./useBundle.js";
 import { DarkMode } from "@aparajita/capacitor-dark-mode";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
@@ -31,6 +32,7 @@ import { Network } from "@capacitor/network";
 
 const $q = useQuasar();
 const appStore = useAppStore();
+const routeStore = useRouteStore();
 const appearanceListenerHandle = ref();
 const networkListenerHandle = ref();
 const pointerListener = ref();

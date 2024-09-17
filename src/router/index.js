@@ -5,6 +5,7 @@ import {
   createWebHistory,
   createWebHashHistory,
 } from "vue-router";
+import { useRouteStore } from "@/stores/routeStore";
 import routes from "./routes";
 
 /*
@@ -17,7 +18,7 @@ import routes from "./routes";
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  let position = 0;
+  const routeStore = useRouteStore();
 
   const createHistory = process.env.SERVER
     ? createMemoryHistory
@@ -37,18 +38,20 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from) => {
     if (from.path == "/" && to.path == "/") return;
-    const isBack = position > window.history.state.position;
+    const isBack = routeStore.position > window.history.state.position;
     if (isBack) {
       to.meta.enterActiveClass = "animated slideInLeft";
       to.meta.leaveActiveClass = "animated slideOutRight fullscreen";
+      routeStore.removeCachedView(from.path);
     } else {
       to.meta.enterActiveClass = "animated slideInRight fullscreen";
       to.meta.leaveActiveClass = "animated slideOutLeft";
+      routeStore.addCachedView(to.path);
     }
   });
 
   Router.afterEach((to, from) => {
-    position = window.history.state?.position || 0;
+    routeStore.setPosition(window.history.state?.position || 0);
   });
 
   return Router;
