@@ -1,7 +1,7 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <div class="q-pa-md q-gutter-y-sm">
-      <q-card>
+      <q-card flat bordered>
         <q-card-section v-if="appStore.version">
           Current version: {{ appStore.version }}
         </q-card-section>

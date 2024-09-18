@@ -1,7 +1,7 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <div class="q-pa-md q-gutter-y-sm">
-      <q-card v-for="(item, key) of scanResult" :key="key">
+      <q-card v-for="(item, key) of scanResult" :key="key" flat bordered>
         <q-card-section v-if="scanResult">
           {{ item }}
         </q-card-section>

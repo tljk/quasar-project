@@ -1,47 +1,61 @@
 <template>
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <div class="q-pa-md q-gutter-sm">
-      <q-btn label="Go to home" to="/home" />
-      <q-btn label="Go to detail" @click="onClick" />
-      <q-btn label="Go to about" to="/about" />
-      <q-btn label="Go to wifi scan" to="/wifi-scan" />
-      <q-btn label="Go to barcode scan" to="/barcode-scan" />
-      <q-btn label="Go to geolocation" to="/geolocation" />
-      <q-btn label="Go to camera" to="/camera" />
-      <q-btn label="Go to grid preview" to="/grid-preview" />
-      <q-btn label="Go to pinch container" to="/pinch-container" />
-      <q-btn label="Go to pan container" to="/pan-container" />
+      <q-card flat bordered>
+        <q-card-actions vertical align="left">
+          <q-btn flat label="Go to home" to="/home" />
+          <q-btn flat label="Go to detail" @click="onClick" />
+          <q-btn flat label="Go to about" to="/about" />
+          <q-btn
+            v-if="appStore.device.capacitor"
+            flat
+            label="Go to wifi scan"
+            to="/wifi-scan"
+          />
+          <q-btn flat label="Go to barcode scan" to="/barcode-scan" />
+          <q-btn flat label="Go to geolocation" to="/geolocation" />
+          <q-btn flat label="Go to camera" to="/camera" />
+          <q-btn flat label="Go to grid preview" to="/grid-preview" />
+          <q-btn flat label="Go to pinch container" to="/pinch-container" />
+          <q-btn flat label="Go to pan container" to="/pan-container" />
 
-      <q-btn-dropdown
-        label="Redirect to google map"
-        split
-        cover
-        @click="toGoogleMap"
-      >
-        <q-list>
-          <q-item>
-            <q-item-section>
-              <q-input v-model="latitude" label="latitude" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section>
-              <q-input v-model="longitude" label="longitude" />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+          <q-btn-dropdown
+            flat
+            label="Redirect to google map"
+            split
+            cover
+            @click="toGoogleMap"
+          >
+            <q-list>
+              <q-item>
+                <q-item-section>
+                  <q-input v-model="latitude" label="latitude" />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-input v-model="longitude" label="longitude" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
 
-      <q-btn label="Redirect to speed test" @click="toSpeedTest" />
-      <div v-if="url">Speed {{ url.split("=")[1] }}</div>
-      <q-btn
-        label="Redirect to video test"
-        @click="openWebView('https://test-videos.co.uk/bigbuckbunny/mp4-h265')"
-      />
-      <q-btn
-        label="Redirect to ufo test"
-        @click="openWebView('https://www.testufo.com/')"
-      />
+          <q-btn flat label="Redirect to speed test" @click="toSpeedTest" />
+          <div v-if="url">Speed {{ url.split("=")[1] }}</div>
+          <q-btn
+            flat
+            label="Redirect to video test"
+            @click="
+              openWebView('https://test-videos.co.uk/bigbuckbunny/mp4-h265')
+            "
+          />
+          <q-btn
+            flat
+            label="Redirect to ufo test"
+            @click="openWebView('https://www.testufo.com/')"
+          />
+        </q-card-actions>
+      </q-card>
     </div>
   </q-page>
 </template>

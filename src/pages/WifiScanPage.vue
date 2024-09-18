@@ -2,7 +2,7 @@
   <q-page class="fixed-full dark-mode scroll hide-scrollbar">
     <q-pull-to-refresh @refresh="refresh" class="full">
       <div class="q-pa-md q-gutter-y-sm">
-        <q-card v-for="(item, key) of wifiList" :key="key">
+        <q-card v-for="(item, key) of wifiList" :key="key" flat>
           <q-card-section> {{ item }} </q-card-section>
         </q-card>
       </div>
@@ -17,7 +17,7 @@ import { Wifi } from "ln-capacitor-wifi";
 
 const $q = useQuasar();
 
-const wifiList = ref(["loading..."]);
+const wifiList = ref(["Pull down to refresh"]);
 
 async function refresh(done) {
   if ($q.platform.is.capacitor) {
