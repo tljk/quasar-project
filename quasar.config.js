@@ -12,7 +12,7 @@ const { configure } = require("quasar/wrappers");
 const path = require("path");
 const { version } = require("./package.json");
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -27,6 +27,7 @@ module.exports = configure(function (/* ctx */) {
       "addressbar-color",
       "pwa-elements",
       "contact",
+      "router",
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -146,6 +147,12 @@ module.exports = configure(function (/* ctx */) {
     //   electronMain: 'src-electron/electron-main',
     //   electronPreload: 'src-electron/electron-preload'
     // },
+
+    htmlVariables: {
+      favicon: ctx.mode.capacitor
+        ? ""
+        : `<link rel="icon" type="image/ico" href="favicon.ico">`,
+    },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
     ssr: {
