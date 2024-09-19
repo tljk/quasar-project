@@ -41,10 +41,10 @@ export default route(function (/* { store, ssrContext } */) {
     const isBack = routeStore.position > window.history.state.position;
     if (isBack) {
       to.meta.enterActiveClass = "animated slideInLeft";
-      to.meta.leaveActiveClass = "animated slideOutRight fullscreen";
+      to.meta.leaveActiveClass = "animated slideOutRight z-top";
       routeStore.removeCachedView(from.path);
     } else {
-      to.meta.enterActiveClass = "animated slideInRight fullscreen";
+      to.meta.enterActiveClass = "animated slideInRight z-top";
       to.meta.leaveActiveClass = "animated slideOutLeft";
       routeStore.addCachedView(to.path);
     }

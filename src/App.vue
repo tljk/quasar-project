@@ -45,7 +45,7 @@ const backgroundColor = computed(() =>
 );
 
 function addWillChange(el) {
-  el.style.willChange = "transform, opacity";
+  el.style.willChange = "transform, visibility";
 }
 function removeWillChange(el) {
   el.style.willChange = "auto";
