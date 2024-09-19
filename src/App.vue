@@ -37,7 +37,7 @@ const appearanceListenerHandle = ref();
 const networkListenerHandle = ref();
 const pointerListener = ref();
 
-const lightBackground = "#ffffff";
+const lightBackground = "#f4f4f4";
 const darkBackground = "#121212";
 
 const backgroundColor = computed(() =>

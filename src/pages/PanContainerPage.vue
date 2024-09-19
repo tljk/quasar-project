@@ -25,7 +25,7 @@
             width: $q.screen.width + 'px',
             height: $q.screen.height + 'px',
           }"
-          class="flex justify-center items-center"
+          class="dark-mode flex justify-center items-center"
         >
           <div class="text-h1 text-bold text-center">
             col:{{ key }} row{{ key1 }}

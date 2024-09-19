@@ -1,5 +1,6 @@
 <template>
-  <q-page class="full" @click="onClick"> </q-page>
+  <q-page class="full dark-mode scroll hide-scrollbar" @click="onClick">
+  </q-page>
 </template>
 
 <script setup>
