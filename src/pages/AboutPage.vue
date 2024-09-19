@@ -42,10 +42,10 @@
         <q-card-actions
           v-if="appStore.nextBundleId || appStore.serviceWorker?.updatefound"
         >
-          <q-btn label="Update" @click="update"></q-btn>
+          <q-btn flat label="Update" @click="update"></q-btn>
         </q-card-actions>
         <q-card-actions v-if="appStore.currentBundleId">
-          <q-btn label="Reset" @click="reset"></q-btn>
+          <q-btn flat label="Reset" @click="reset"></q-btn>
         </q-card-actions>
         <q-card-actions
           v-if="
@@ -53,7 +53,7 @@
             appStore.upgradeProcess == 'required'
           "
         >
-          <q-btn label="Upgrade webview" @click="upgradeWebview"></q-btn>
+          <q-btn flat label="Upgrade webview" @click="upgradeWebview"></q-btn>
         </q-card-actions>
       </q-card>
     </div>
