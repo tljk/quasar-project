@@ -74,8 +74,8 @@ module.exports = configure(function (ctx) {
       // rawDefine: {}
       // ignorePublicFolder: true,
       useFilenameHashes: false,
-      minify: "terser",
-      // polyfillModulePreload: true,
+      minify: false,
+      polyfillModulePreload: true,
       // distDir
 
       // extendViteConf (viteConf) {},

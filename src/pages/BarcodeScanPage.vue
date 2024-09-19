@@ -21,11 +21,9 @@
 <script setup>
 import { ref } from "vue";
 import { useQuasar } from "quasar";
-import { useAppStore } from "src/stores/appStore";
 import { CapacitorBarcodeScanner } from "@capacitor/barcode-scanner";
 
 const $q = useQuasar();
-const appStore = useAppStore();
 
 const scanResult = ref([]);
 const scanOptions = ref({
@@ -37,31 +35,14 @@ const scanOptions = ref({
 });
 
 async function scanBarcode() {
-  if (appStore.device.nativeMobile) {
-    await CapacitorBarcodeScanner.scanBarcode(scanOptions.value)
-      .then((result) => {
-        scanResult.value.push(result);
-      })
-      .catch((error) => {
-        $q.notify({
-          message: `Error scanning: ${error.message}`,
-        });
+  await CapacitorBarcodeScanner.scanBarcode(scanOptions.value)
+    .then((result) => {
+      scanResult.value.push(result);
+    })
+    .catch((error) => {
+      $q.notify({
+        message: `Error scanning: ${error.message}`,
       });
-  } else {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then(async () => {
-        await CapacitorBarcodeScanner.scanBarcode(scanOptions.value).then(
-          (result) => {
-            scanResult.value.push(result);
-          }
-        );
-      })
-      .catch((error) => {
-        $q.notify({
-          message: `Error scanning: ${error.message}`,
-        });
-      });
-  }
+    });
 }
 </script>
