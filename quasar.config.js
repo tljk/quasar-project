@@ -27,7 +27,6 @@ module.exports = configure(function (ctx) {
       "addressbar-color",
       "pwa-elements",
       "contact",
-      "router",
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -134,7 +133,7 @@ module.exports = configure(function (ctx) {
 
     // animations: "all", // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: ["slideInRight", "slideOutRight"],
+    animations: [],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#property-sourcefiles
     // sourceFiles: {
@@ -152,6 +151,8 @@ module.exports = configure(function (ctx) {
       favicon: ctx.mode.capacitor
         ? ""
         : `<link rel="icon" type="image/ico" href="favicon.ico">`,
+      // this prevents flashing white on dark mode
+      script: `<script>(function(){document.documentElement.style.setProperty('background',window.matchMedia('(prefers-color-scheme:dark)').matches?'#121212':'#f4f4f4');})();</script>`,
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
