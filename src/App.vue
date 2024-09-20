@@ -10,8 +10,11 @@
           @after-enter="removeWillChange"
           @after-leave="removeWillChange"
         >
-          <keep-alive :include="routeStore.cachedViews">
-            <component :is="Component" :key="route.path" />
+          <keep-alive
+            :include="routeStore.cachedViews"
+            :max="Number.MAX_SAFE_INTEGER"
+          >
+            <component :is="replaceName(Component, route)" :key="route.path" />
           </keep-alive>
         </transition>
       </router-view>
@@ -49,6 +52,13 @@ function addWillChange(el) {
 }
 function removeWillChange(el) {
   el.style.willChange = "auto";
+}
+
+function replaceName(component, route) {
+  if (component) {
+    component.type.__name = route.path;
+    return component;
+  }
 }
 
 onMounted(async () => {

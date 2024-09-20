@@ -18,11 +18,10 @@ export const useRouteStore = defineStore("route", {
       this.position = position;
     },
     addCachedView(view) {
-      if (this.cachedViews.includes(view)) return;
       this.cachedViews.push(view);
     },
     removeCachedView(view) {
-      const index = this.cachedViews.indexOf(view);
+      const index = this.cachedViews.lastIndexOf(view);
       if (index > -1) {
         this.cachedViews.splice(index, 1);
       }
