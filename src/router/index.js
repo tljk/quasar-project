@@ -37,7 +37,10 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from) => {
-    if (from.path == "/" && to.path == "/") return;
+    if (from.path == "/" && to.path == "/") {
+      routeStore.addCachedView(to.path);
+      return;
+    }
     const isBack = routeStore.position > window.history.state.position;
     if (isBack) {
       to.meta.enterActiveClass = "animated slideInLeft";
