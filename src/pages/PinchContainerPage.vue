@@ -14,7 +14,7 @@
       @containerResize="onContainerResize"
     >
       <img
-        class="full fit-cover"
+        class="full fit-cover block"
         loading="lazy"
         src="https://cdn.quasar.dev/img/parallax2.jpg"
       />

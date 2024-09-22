@@ -9,7 +9,7 @@
       style="width: 50vw; height: 50vw"
     >
       <img
-        class="full fit-cover"
+        class="full fit-cover block"
         :src="item.webPath"
         :ref="
           (el) => {
@@ -57,7 +57,7 @@
         "
       >
         <img
-          class="full fit-cover"
+          class="full fit-cover block"
           loading="lazy"
           :src="item.webPath"
           :style="panContainer?.index == key ? previewStyle : {}"
