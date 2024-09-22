@@ -5,9 +5,9 @@
         <q-card-section>
           This page has been activated {{ count }} times.
         </q-card-section>
-        <q-card-action>
+        <q-card-actions>
           <q-btn flat label="Go to Detail" to="/detail" />
-        </q-card-action>
+        </q-card-actions>
       </q-card>
     </div>
   </q-page>
