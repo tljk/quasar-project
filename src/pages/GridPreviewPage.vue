@@ -6,7 +6,7 @@
       v-tap="() => togglePreview(key)"
       v-for="(item, key) of imageDataList"
       :key="key"
-      style="width: 50vw; height: 50vw"
+      style="width: 50vmin; height: 50vmin"
     >
       <img
         class="full fit-cover block"
@@ -70,19 +70,20 @@
       </PinchContainer>
     </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
+      <q-btn fab icon="add_a_photo" color="primary" @click="pickImages" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
-import { useQuasar, morph } from "quasar";
+import { ref, watch, computed } from "vue";
+import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
 import PinchContainer from "@/components/PinchContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 import { usePinchContainer } from "@/components/usePinchContainer";
+import { useMorph } from "@/useMorph";
 
 const $q = useQuasar();
 const panContainer = ref(
@@ -105,18 +106,12 @@ const defaultPinchStyle = ref({
   transition: "transform 0.3s",
 });
 const imageDataList = ref([]);
-const cameraOptions = ref({
-  quality: 90,
-  direction: "REAR",
-  resultType: CameraResultType.Uri,
-});
-const panOption = ref(""); // pan, pinch or preview
-const pinching = ref(false);
 const thumbRef = ref({});
 const fullRef = ref({});
+const panOption = ref(""); // pan, pinch or preview
+const pinching = ref(false);
 const showPreview = ref(false);
 const morphing = ref(false);
-const cancelMorph = ref();
 const scaleRatio = ref(1);
 const offsetX = ref(0);
 const offsetY = ref(0);
@@ -136,21 +131,14 @@ const dimmedStyle = computed(() => {
   };
 });
 
-watch(
-  () => panContainer.value?.index,
-  () => {
-    resetPinchContainer();
-  }
-);
-
-async function takePicture() {
-  await Camera.getPhoto(cameraOptions.value)
-    .then((image) => {
-      imageDataList.value.push(image);
+async function pickImages() {
+  await Camera.pickImages()
+    .then(({ photos }) => {
+      imageDataList.value.push(...photos);
     })
     .catch((error) => {
       $q.notify({
-        message: `Error taking picture: ${error.message}`,
+        message: `Error picking images: ${error.message}`,
       });
     });
 }
@@ -206,36 +194,30 @@ function resizeDispatchHandler(size, key) {
 }
 
 function togglePreview(key) {
-  const temp = showPreview.value;
-  if (!temp && cancelMorph.value) {
-    cancelMorph.value();
-    cancelMorph.value = null;
-    dimmed.value = 0;
-    setDuration(300);
-    return;
-  }
   if (morphing.value) return;
-
-  cancelMorph.value = morph({
-    from: showPreview.value ? fullRef.value[key] : thumbRef.value[key],
-    to: showPreview.value ? thumbRef.value[key] : fullRef.value[key],
-    hideFromClone: true,
-    keepToClone: true,
-    resize: true,
+  const temp = showPreview.value;
+  const { morph } = useMorph({
+    from: thumbRef.value[key],
+    to: fullRef.value[key],
+    reverse: temp,
+    duration: 300,
     onToggle: () => {
-      if (temp) showPreview.value = false; // exit preview
+      if (temp) {
+        showPreview.value = false;
+      } else {
+        panContainer.value?.setIndex(key);
+      }
       morphing.value = true;
       dimmed.value = temp ? 0 : 1;
       resetPinchContainer();
-      panContainer.value?.setIndex(key);
       setDuration(300);
     },
-    onEnd: (direction, aborted) => {
-      if (!temp && direction == "to" && !aborted) showPreview.value = true; // enter preview
-      cancelMorph.value = null;
+    onEnd: () => {
+      if (!temp) showPreview.value = true;
       morphing.value = false;
     },
   });
+  morph();
 }
 
 function resetPinchContainer() {
@@ -276,15 +258,4 @@ function setDuration(durationValue) {
     duration.value = 0;
   }, durationValue);
 }
-
-onMounted(() => {
-  for (let i = 0; i < 2; i++) {
-    imageDataList.value.push({
-      webPath: "https://cdn.quasar.dev/img/parallax1.jpg",
-    });
-    imageDataList.value.push({
-      webPath: "https://cdn.quasar.dev/img/parallax2.jpg",
-    });
-  }
-});
 </script>
