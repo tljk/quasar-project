@@ -21,7 +21,11 @@
         @resize="pinchContainerList[key]?.onResize"
         @containerResize="pinchContainerList[key]?.onContainerResize"
       >
-        <img class="full fit-cover block" loading="lazy" :src="item.webPath" />
+        <img
+          class="full fit-cover block no-pointer-events"
+          loading="lazy"
+          :src="item.webPath"
+        />
       </PinchContainer>
     </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">

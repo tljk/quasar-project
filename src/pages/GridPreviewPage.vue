@@ -8,12 +8,12 @@
       :key="key"
       style="width: 50vmin; height: 50vmin"
     >
-      <img
-        class="full fit-cover block"
+      <q-img
+        class="full"
         :src="item.webPath"
         :ref="
           (el) => {
-            thumbRef[key] = el;
+            thumbRef[key] = el.$el;
           }
         "
       />
@@ -57,7 +57,7 @@
         "
       >
         <img
-          class="full fit-cover block"
+          class="full fit-cover block no-pointer-events"
           loading="lazy"
           :src="item.webPath"
           :style="panContainer?.index == key ? previewStyle : {}"
@@ -76,9 +76,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
-import { Camera, CameraResultType } from "@capacitor/camera";
+import { Camera } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
 import PinchContainer from "@/components/PinchContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
