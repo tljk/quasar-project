@@ -1,21 +1,33 @@
 <template>
-  <q-page class="full dark-mode scroll hide-scrollbar">
-    <div v-if="fullScreen" id="player" class="full"></div>
-    <div v-else @click="onFullScreen">
-      <video class="full" autoplay muted :src="video" :poster="poster"></video>
+  <q-page class="full dark-mode scroll hide-scrollbar" @click="onFullScreen">
+    <div v-if="fullScreen" class="full" id="player"></div>
+    <div v-else class="full">
+      <video
+        class="full block"
+        controls
+        controlslist="nofullscreen"
+        muted
+        :src="webPath"
+        :poster="poster"
+      ></video>
     </div>
+
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="add_a_photo" color="primary" @click.stop="getVideo" />
+    </q-page-sticky>
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useAppStore } from "src/stores/appStore";
+import { Capacitor } from "@capacitor/core";
 import { CapacitorVideoPlayer } from "capacitor-video-player";
+import { CapacitorChooseVideo } from "capacitor-choose-video";
 
 const $q = useQuasar();
 const appStore = useAppStore();
-const player = ref();
 
 const fullScreen = ref(false);
 const video = ref(
@@ -24,31 +36,64 @@ const video = ref(
 const poster = ref(
   "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
 );
+const webPath = computed(() => {
+  return Capacitor.convertFileSrc(video.value);
+});
+const playerOptions = ref({
+  playerId: "player",
+  componentTag: "div",
+  mode: appStore.device.capacitor ? "fullscreen" : "embedded",
+  width: $q.screen.width,
+  height: $q.screen.height,
+});
 
 async function onFullScreen() {
   fullScreen.value = !fullScreen.value;
   if (fullScreen.value) {
-    await player.value
-      .initPlayer({
-        mode: appStore.device.capacitor ? "fullscreen" : "embedded",
-        playerId: "player",
-        componentTag: "div",
-        title: "Big Buck Bunny",
+    await CapacitorVideoPlayer.initPlayer(
+      Object.assign(playerOptions.value, {
         url: video.value,
-        width: $q.screen.width,
-        height: $q.screen.height,
+        poster: poster.value,
       })
-      .catch((err) => {
+    ).catch((error) => {
+      $q.notify({
+        message: `Error initializing player: ${error.message}`,
+      });
+    });
+  }
+}
+
+async function getVideo() {
+  if (appStore.device.capacitor) {
+    await CapacitorChooseVideo.getVideo()
+      .then(({ path }) => {
+        if (path) {
+          video.value = path;
+          poster.value = "";
+        }
+      })
+      .catch((error) => {
         $q.notify({
-          message: "Error initializing player: " + JSON.stringify(err),
+          message: `Error getting video: ${error.message}`,
         });
       });
+  } else {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "video/*";
+    input.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        video.value = URL.createObjectURL(file);
+        poster.value = "";
+      }
+    };
+    input.click();
   }
 }
 
 onMounted(async () => {
-  player.value = CapacitorVideoPlayer;
-  player.value.addListener("jeepCapVideoPlayerExit", () => {
+  CapacitorVideoPlayer.addListener("jeepCapVideoPlayerExit", () => {
     fullScreen.value = false;
   });
 });
