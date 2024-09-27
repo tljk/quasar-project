@@ -43,6 +43,10 @@ const routes = [
     path: "/grid-preview",
     component: () => import("pages/GridPreviewPage.vue"),
   },
+  {
+    path: "/video-preview",
+    component: () => import("pages/VideoPreviewPage.vue"),
+  },
 
   // Always leave this as last one,
   // but you can also remove it

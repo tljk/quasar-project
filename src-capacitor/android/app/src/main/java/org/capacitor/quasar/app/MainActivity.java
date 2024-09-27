@@ -6,6 +6,8 @@ import com.getcapacitor.BridgeActivity;
 
 import com.github.tljk.CapacitorWebviewUpdatePlugin;
 
+import com.google.android.gms.cast.framework.CastContext;
+
 public class MainActivity extends BridgeActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -13,5 +15,7 @@ public class MainActivity extends BridgeActivity {
     capacitorWebviewUpdatePlugin.initWebview(getApplicationContext());
 
     super.onCreate(savedInstanceState);
+
+    CastContext.getSharedInstance(this);
   }
 }

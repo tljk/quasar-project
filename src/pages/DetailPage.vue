@@ -18,6 +18,7 @@
           <q-btn flat label="Go to grid preview" to="/grid-preview" />
           <q-btn flat label="Go to pinch container" to="/pinch-container" />
           <q-btn flat label="Go to pan container" to="/pan-container" />
+          <q-btn flat label="Go to video preview" to="/video-preview" />
 
           <q-btn-dropdown
             flat

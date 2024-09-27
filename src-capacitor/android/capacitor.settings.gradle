@@ -32,6 +32,9 @@ project(':capawesome-capacitor-live-update').projectDir = new File('../node_modu
 include ':capgo-inappbrowser'
 project(':capgo-inappbrowser').projectDir = new File('../node_modules/@capgo/inappbrowser/android')
 
+include ':capacitor-video-player'
+project(':capacitor-video-player').projectDir = new File('../node_modules/capacitor-video-player/android')
+
 include ':capacitor-webview-update'
 project(':capacitor-webview-update').projectDir = new File('../node_modules/capacitor-webview-update/android')
 

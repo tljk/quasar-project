@@ -43,6 +43,7 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
     implementation 'io.github.jonanorman.android.webviewup:core:0.1.0'
     implementation 'io.github.jonanorman.android.webviewup:download-source:0.1.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.2.0'
 }
 
 apply from: 'capacitor.build.gradle'
