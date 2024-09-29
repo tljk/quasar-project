@@ -1,31 +1,39 @@
 <template>
-  <q-layout class="overflow-hidden">
-    <q-tab-panels v-model="tab" animated keep-alive class="full">
-      <q-tab-panel name="home" class="full no-padding no-scroll">
-        <HomeTab />
-      </q-tab-panel>
-      <q-tab-panel name="message" class="full no-padding no-scroll">
-        <MessageTab />
-      </q-tab-panel>
-      <q-tab-panel name="user" class="full no-padding no-scroll">
-        <UserTab />
-      </q-tab-panel>
-    </q-tab-panels>
-    <q-footer>
-      <q-tabs v-model="tab" align="justify" narrow-indicator>
-        <q-tab name="home" icon="home" />
-        <q-tab name="message" icon="message" />
-        <q-tab name="user" icon="settings" />
-      </q-tabs>
-    </q-footer>
+  <q-layout class="fixed-full">
+    <slot name="header">
+      <q-header bordered>
+        <q-toolbar>
+          <q-btn flat round icon="arrow_back" @click="back" />
+          <q-toolbar-title> {{ props.title }} </q-toolbar-title>
+          <q-space />
+          <q-btn flat round icon="more_vert" />
+        </q-toolbar>
+      </q-header>
+    </slot>
+
+    <q-page-container class="full" v-if="$slots.default">
+      <q-page class="full dark-mode scroll hide-scrollbar" :style-fn="styleFn">
+        <slot> </slot>
+      </q-page>
+    </q-page-container>
+
+    <slot name="page"> </slot>
+
+    <slot name="footer"> </slot>
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import HomeTab from "src/components/HomeTab.vue";
-import MessageTab from "src/components/MessageTab.vue";
-import UserTab from "src/components/UserTab.vue";
+const props = defineProps({
+  title: String,
+});
+const offset = defineModel();
 
-const tab = ref("home");
+function back() {
+  window.history.back();
+}
+
+function styleFn(offsetValue) {
+  offset.value = offsetValue;
+}
 </script>

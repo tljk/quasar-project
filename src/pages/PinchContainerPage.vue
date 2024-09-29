@@ -1,12 +1,8 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="Pinch" v-model="offset">
     <PinchContainer
-      class="fixed-center"
       composable
-      :style="{
-        width: $q.screen.width + 'px',
-        height: $q.screen.height + 'px',
-      }"
+      :style="style"
       :pinchStyle="pinchStyle"
       @pinch="handlePinch"
       @pan="handlePan"
@@ -19,15 +15,22 @@
         src="https://cdn.quasar.dev/img/parallax2.jpg"
       />
     </PinchContainer>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import PinchContainer from "@/components/PinchContainer.vue";
 import { usePinchContainer } from "@/components/usePinchContainer";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
 const { pinchStyle, handlePinch, handlePan, onResize, onContainerResize } =
   usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 });
+const offset = ref();
+const style = computed(() => ({
+  width: $q.screen.width + "px",
+  height: $q.screen.height - offset.value + "px",
+}));
 </script>

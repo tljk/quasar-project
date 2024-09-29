@@ -1,15 +1,11 @@
 <template>
-  <q-page
-    class="fixed-full dark-mode scroll hide-scrollbar flex justify-start content-start"
-  >
-    <div
-      v-tap="() => togglePreview(key)"
-      v-for="(item, key) of imageDataList"
-      :key="key"
-      style="width: 50vmin; height: 50vmin"
-    >
+  <MainLayout title="Grid">
+    <div class="flex">
       <q-img
-        class="full"
+        v-tap="() => togglePreview(key)"
+        v-for="(item, key) of imageDataList"
+        style="width: 50vmin; height: 50vmin"
+        :key="key"
         :src="item.webPath"
         :ref="
           (el) => {
@@ -70,9 +66,9 @@
       </PinchContainer>
     </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add_a_photo" color="primary" @click="pickImages" />
+      <q-btn fab icon="add_a_photo" color="primary" @click.stop="pickImages" />
     </q-page-sticky>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
@@ -84,6 +80,7 @@ import PinchContainer from "@/components/PinchContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 import { usePinchContainer } from "@/components/usePinchContainer";
 import { useMorph } from "@/useMorph";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
 const panContainer = ref(

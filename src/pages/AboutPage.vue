@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="About">
     <div class="q-pa-md q-gutter-y-sm">
       <q-card flat bordered>
         <q-card-section v-if="appStore.version">
@@ -57,7 +57,7 @@
         </q-card-actions>
       </q-card>
     </div>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
@@ -65,6 +65,7 @@ import { onMounted } from "vue";
 import { useAppStore } from "@/stores/appStore";
 import { LiveUpdate } from "@capawesome/capacitor-live-update";
 import { CapacitorWebviewUpdate } from "capacitor-webview-update";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const appStore = useAppStore();
 

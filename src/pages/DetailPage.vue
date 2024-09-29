@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="Detail">
     <div class="q-pa-md q-gutter-sm">
       <q-card flat bordered>
         <q-card-actions vertical align="left">
@@ -22,9 +22,9 @@
 
           <q-btn-dropdown
             flat
-            label="Redirect to google map"
             split
             cover
+            label="Redirect to google map"
             @click="toGoogleMap"
           >
             <q-list>
@@ -58,7 +58,7 @@
         </q-card-actions>
       </q-card>
     </div>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
@@ -66,10 +66,9 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { AppLauncher } from "@capacitor/app-launcher";
 import { InAppBrowser } from "@capgo/inappbrowser";
-import { useQuasar } from "quasar";
 import { useAppStore } from "@/stores/appStore";
+import MainLayout from "@/layouts/MainLayout.vue";
 
-const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="Camera" v-model="offset">
     <PanContainer
       class="full"
       composable
@@ -12,10 +12,7 @@
         v-for="(item, key) of imageDataList"
         :key="key"
         composable
-        :style="{
-          width: $q.screen.width + 'px',
-          height: $q.screen.height + 'px',
-        }"
+        :style="style"
         :pinchStyle="pinchContainerList[key]?.pinchStyle"
         @pinch="pinchDispatchHandler"
         @resize="pinchContainerList[key]?.onResize"
@@ -29,19 +26,20 @@
       </PinchContainer>
     </PanContainer>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add_a_photo" color="primary" @click="takePicture" />
+      <q-btn fab icon="add_a_photo" color="primary" @click.stop="takePicture" />
     </q-page-sticky>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
 import PinchContainer from "@/components/PinchContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 import { usePinchContainer } from "@/components/usePinchContainer";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
 const { panStyle, index, handlePan, onResize, onContainerResize } =
@@ -60,6 +58,11 @@ const cameraOptions = ref({
 const pinchContainerList = ref([]);
 const panOption = ref(false);
 const pinching = ref(false);
+const offset = ref();
+const style = computed(() => ({
+  width: $q.screen.width + "px",
+  height: $q.screen.height - offset.value + "px",
+}));
 
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="Scan">
     <div class="q-pa-md q-gutter-y-sm">
       <q-card v-for="(item, key) of scanResult" :key="key" flat bordered>
         <q-card-section v-if="scanResult">
@@ -11,17 +11,18 @@
           fab
           icon="qr_code_scanner"
           color="primary"
-          @click="scanBarcode"
+          @click.stop="scanBarcode"
         />
       </q-page-sticky>
     </div>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { CapacitorBarcodeScanner } from "@capacitor/barcode-scanner";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
 

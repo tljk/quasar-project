@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fixed-full dark-mode scroll hide-scrollbar">
+  <MainLayout title="Location">
     <div class="q-pa-md q-gutter-y-sm">
       <q-card v-for="(item, key) of geolocationResult" :key="key" flat bordered>
         <q-card-section v-if="geolocationResult">
@@ -12,17 +12,18 @@
           icon="gps_fixed"
           color="primary"
           :loading="loading"
-          @click="getGeolocation"
+          @click.stop="getGeolocation"
         />
       </q-page-sticky>
     </div>
-  </q-page>
+  </MainLayout>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { Geolocation } from "@capacitor/geolocation";
+import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
 const loading = ref(false);

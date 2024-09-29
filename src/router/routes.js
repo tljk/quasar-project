@@ -1,10 +1,7 @@
 const routes = [
   {
     path: "/",
-    component: () => import("src/layouts/MainLayout.vue"),
-  },
-  {
-    path: "/home",
+    alias: "/home",
     component: () => import("pages/HomePage.vue"),
   },
   {
