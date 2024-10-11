@@ -16,7 +16,7 @@
     </template>
     <template #page>
       <q-page-container>
-        <q-tab-panels class="dark-mode" v-model="tab" animated keep-alive>
+        <q-tab-panels class="dark-mode" v-model="tab" keep-alive>
           <q-tab-panel name="home" class="no-padding no-scroll">
             <HomeTab />
           </q-tab-panel>
