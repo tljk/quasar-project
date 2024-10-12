@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import HomeTab from "@/components/HomeTab.vue";
 import MessageTab from "@/components/MessageTab.vue";
@@ -51,4 +51,7 @@ import UserTab from "@/components/UserTab.vue";
 const tab = ref("home");
 const header = ref(true);
 const footer = ref(true);
+
+provide("header", header);
+provide("footer", footer);
 </script>

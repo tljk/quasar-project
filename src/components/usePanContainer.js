@@ -62,12 +62,14 @@ export function usePanContainer(props) {
   }
 
   function onResize(size) {
+    if (size.width == 0 || size.height == 0) return;
     width.value = size.width;
     height.value = size.height;
     offset.value = distance.value;
   }
 
   function onContainerResize(size) {
+    if (size.width == 0 || size.height == 0) return;
     fullLength.value = props.vertical ? size.height : size.width;
   }
 

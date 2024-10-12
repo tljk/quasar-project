@@ -125,6 +125,7 @@ export function usePinchContainer(props) {
   }
 
   function onResize(size) {
+    if (size.width == 0 || size.height == 0) return;
     width.value = size.width;
     height.value = size.height;
     distanceX.value = offsetX.value;
@@ -132,6 +133,7 @@ export function usePinchContainer(props) {
   }
 
   function onContainerResize(size) {
+    if (size.width == 0 || size.height == 0) return;
     containerWidth.value = size.width;
     containerHeight.value = size.height;
   }

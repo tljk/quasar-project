@@ -6,7 +6,7 @@
           <q-btn flat round icon="arrow_back" @click="back" />
           <q-toolbar-title> {{ props.title }} </q-toolbar-title>
           <q-space />
-          <q-btn flat round icon="more_vert" />
+          <q-btn flat round icon="more_vert" to="/detail" />
         </q-toolbar>
       </q-header>
     </slot>
