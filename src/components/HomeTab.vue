@@ -3,10 +3,10 @@
     <PanContainer
       class="full"
       composable
-      :panStyle="panStyle"
+      :panStyle="panContainer.panStyle"
       @pan="panDispatchHandler"
-      @resize="onResize"
-      @containerResize="onContainerResize"
+      @resize="panContainer.onResize"
+      @containerResize="panContainer.onContainerResize"
     >
       <q-page
         v-for="(item, key) of tabList"
@@ -21,41 +21,30 @@
     </PanContainer>
     <q-page-sticky position="top" expand>
       <PanTabBar
-        :offset="panTabBar.offset.value"
-        :duration="panTabBar.duration.value"
+        :index="panContainer.index"
+        :tabList="tabList"
+        :scrollLeft="panTabBar.scrollLeft"
+        :duration="panTabBar.duration"
+        :indicatorStyle="panTabBar.indicatorStyle"
+        @click="
+          (index) => {
+            panContainer.setIndex(index);
+            panContainer.setDuration(300);
+            panTabBar.setIndex(index);
+          }
+        "
+        @change="panTabBar.onChange"
         @resize="panTabBar.onResize"
       >
-        <q-btn
-          v-for="(item, key) in tabList"
-          flat
-          dense
-          class="col-grow"
-          :key="key"
-          :label="item.label"
-          :class="{
-            'text-primary': key == index,
-          }"
-          :ref="
-            (el) => {
-              labelWidthRef[key] = el?.$el.clientWidth;
-            }
-          "
-          @click="
-            () => {
-              panTabBar.onChange(key);
-              setIndex(key);
-              setDuration(300);
-            }
-          "
-        >
-        </q-btn>
         <q-btn
           flat
           dense
           icon="menu"
           @click="
             () => {
-              tabList.push({ label: `Label ${Math.pow(10, index)}` });
+              tabList.push({
+                label: `Label ${Math.pow(10, panContainer.index)}`,
+              });
             }
           "
         />
@@ -65,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, toRef, computed } from "vue";
 import { useQuasar } from "quasar";
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
@@ -73,26 +62,23 @@ import PanTabBar from "@/components/PanTabBar.vue";
 import { usePanTabBar } from "./usePanTabBar";
 
 const $q = useQuasar();
-const {
-  panStyle,
-  index,
-  handlePan,
-  onResize,
-  onContainerResize,
-  setIndex,
-  setDuration,
-} = usePanContainer({
-  index: 0,
-  vertical: false,
-  distanceThreshold: 0.6,
-  velocityThreshold: 0.3,
-});
-const labelWidthRef = ref({});
-const panTabBar = usePanTabBar(index, labelWidthRef);
+const panContainer = ref(
+  usePanContainer({
+    index: 0,
+    vertical: false,
+    distanceThreshold: 0.6,
+    velocityThreshold: 0.3,
+  })
+);
+const panTabBar = ref(usePanTabBar(toRef(panContainer.value, "index")));
 const offset = ref();
 const panOption = ref(""); // pan or scroll
 
-const tabList = ref([{ label: "Label" }]);
+const tabList = ref([
+  { label: "Label" },
+  { label: "Label" },
+  { label: "Label" },
+]);
 
 const style = computed(() => ({
   width: $q.screen.width + "px",
@@ -113,8 +99,8 @@ function panDispatchHandler(e) {
   }
 
   if (panOption.value == "pan") {
-    handlePan(e);
-    panTabBar.handlePan(e);
+    panContainer.value.handlePan(e);
+    panTabBar.value.handlePan(e);
   }
 
   if (e.type == "panend") {
