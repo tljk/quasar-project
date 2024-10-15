@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { Camera } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
@@ -127,6 +127,13 @@ const dimmedStyle = computed(() => {
     transition: `opacity ${duration.value}ms`,
   };
 });
+
+watch(
+  () => panContainer.value?.index,
+  () => {
+    resetPinchContainer();
+  }
+);
 
 async function pickImages() {
   await Camera.pickImages()

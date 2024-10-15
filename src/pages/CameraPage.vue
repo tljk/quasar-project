@@ -3,20 +3,28 @@
     <PanContainer
       class="full"
       composable
-      :panStyle="panStyle"
+      :panStyle="panContainer?.panStyle"
       @pan="panDispatchHandler"
-      @resize="onResize"
-      @containerResize="onContainerResize"
+      @resize="panContainer?.onResize"
+      @containerResize="panContainer?.onContainerResize"
     >
       <PinchContainer
         v-for="(item, key) of imageDataList"
         :key="key"
         composable
         :style="style"
-        :pinchStyle="pinchContainerList[key]?.pinchStyle"
+        :pinchStyle="
+          panContainer?.index == key
+            ? pinchContainer?.pinchStyle
+            : defaultPinchStyle
+        "
         @pinch="pinchDispatchHandler"
-        @resize="pinchContainerList[key]?.onResize"
-        @containerResize="pinchContainerList[key]?.onContainerResize"
+        @resize="pinchContainer?.onResize"
+        @containerResize="
+          (size) => {
+            resizeDispatchHandler(size, key);
+          }
+        "
       >
         <img
           class="full fit-cover block no-pointer-events"
@@ -32,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
@@ -42,20 +50,31 @@ import { usePinchContainer } from "@/components/usePinchContainer";
 import MainLayout from "@/layouts/MainLayout.vue";
 
 const $q = useQuasar();
-const { panStyle, index, handlePan, onResize, onContainerResize } =
+const panContainer = ref(
   usePanContainer({
     index: 0,
     vertical: false,
     distanceThreshold: 0.6,
     velocityThreshold: 0.3,
-  });
+  })
+);
 const imageDataList = ref([]);
 const cameraOptions = ref({
   quality: 90,
   direction: "REAR",
   resultType: CameraResultType.Uri,
 });
-const pinchContainerList = ref([]);
+const pinchContainer = ref(
+  usePinchContainer({
+    maxScaleRatio: 10,
+    minScaleRatio: 0.1,
+  })
+);
+const pinchContainerSizeList = ref({});
+const defaultPinchStyle = ref({
+  transform: "scale(1) translate(0px, 0px)",
+  transition: "transform 0.3s",
+});
 const panOption = ref(false);
 const pinching = ref(false);
 const offset = ref();
@@ -64,12 +83,16 @@ const style = computed(() => ({
   height: $q.screen.height - offset.value + "px",
 }));
 
+watch(
+  () => panContainer.value?.index,
+  () => {
+    resetPinchContainer();
+  }
+);
+
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
     .then((image) => {
-      pinchContainerList.value.push(
-        usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 })
-      );
       imageDataList.value.push(image);
     })
     .catch((error) => {
@@ -81,7 +104,7 @@ async function takePicture() {
 
 function panDispatchHandler(event) {
   if (pinching.value) return;
-  const borderReached = pinchContainerList.value[index.value]?.borderReached;
+  const borderReached = pinchContainer.value?.borderReached;
   if (borderReached && event.type == "panstart") {
     if (
       (borderReached.top && event.detail.live.direction == "down") ||
@@ -96,9 +119,9 @@ function panDispatchHandler(event) {
   }
 
   if (panOption.value) {
-    handlePan(event);
+    panContainer.value?.handlePan(event);
   } else {
-    pinchContainerList.value[index.value]?.handlePan(event);
+    pinchContainer.value?.handlePan(event);
   }
 
   if (event.type == "panend") {
@@ -110,9 +133,25 @@ function pinchDispatchHandler(event) {
   if (event.type == "pinchstart") {
     pinching.value = true;
   }
-  pinchContainerList.value[index.value]?.handlePinch(event);
+  pinchContainer.value?.handlePinch(event);
   if (event.type == "pinchend") {
     pinching.value = false;
   }
+}
+
+function resizeDispatchHandler(size, key) {
+  pinchContainerSizeList.value[key] = size;
+  if (key == panContainer.value?.index) {
+    pinchContainer.value?.onContainerResize(size);
+  }
+}
+
+function resetPinchContainer() {
+  pinchContainer.value?.setScaleRatio(1);
+  pinchContainer.value?.setOffsetX(0);
+  pinchContainer.value?.setOffsetY(0);
+  pinchContainer.value?.onContainerResize(
+    pinchContainerSizeList.value[panContainer.value?.index]
+  );
 }
 </script>
