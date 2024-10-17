@@ -10,6 +10,10 @@ export function useMorph(props) {
 
   function morph() {
     onToggle.value();
+    if (!source.value || !target.value) {
+      onEnd.value();
+      return;
+    }
     nextTick(() => {
       const sourceRect = source.value.getBoundingClientRect();
       const targetRect = target.value.getBoundingClientRect();

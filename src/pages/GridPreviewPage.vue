@@ -1,19 +1,20 @@
 <template>
   <MainLayout title="Grid">
-    <div class="flex">
+    <div class="flex" :style="scrollStyle">
       <q-img
-        v-tap="() => togglePreview(key)"
-        v-for="(item, key) of imageDataList"
+        v-tap="() => togglePreview(item.index)"
+        v-for="item of virtualThumbList"
         style="width: 50vmin; height: 50vmin"
-        :key="key"
+        :key="item.index"
         :src="item.webPath"
         :ref="
           (el) => {
-            thumbRef[key] = el.$el;
+            thumbRef[item.index] = el?.$el;
           }
         "
       />
     </div>
+    <q-scroll-observer @scroll="scrollHandler" />
 
     <div
       class="fullscreen no-pointer-events bg-black"
@@ -30,17 +31,18 @@
       @resize="panContainer?.onResize"
       @containerResize="panContainer?.onContainerResize"
     >
+      <div :style="padStyle"></div>
       <PinchContainer
-        v-tap="() => togglePreview(key)"
-        v-for="(item, key) of imageDataList"
-        :key="key"
+        v-tap="() => togglePreview(item.index)"
+        v-for="item of virtualImageList"
+        :key="item.index"
         composable
         :style="{
           width: $q.screen.width + 'px',
           height: $q.screen.height + 'px',
         }"
         :pinchStyle="
-          panContainer?.index == key
+          panContainer?.index == item.index
             ? pinchContainer?.pinchStyle
             : defaultPinchStyle
         "
@@ -48,7 +50,7 @@
         @resize="pinchContainer?.onResize"
         @containerResize="
           (size) => {
-            resizeDispatchHandler(size, key);
+            resizeDispatchHandler(size, item.index);
           }
         "
       >
@@ -56,10 +58,10 @@
           class="full fit-cover block no-pointer-events"
           loading="lazy"
           :src="item.webPath"
-          :style="panContainer?.index == key ? previewStyle : {}"
+          :style="panContainer?.index == item.index ? previewStyle : {}"
           :ref="
             (el) => {
-              fullRef[key] = el;
+              fullRef[item.index] = el;
             }
           "
         />
@@ -72,7 +74,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useQuasar } from "quasar";
 import { Camera } from "@capacitor/camera";
 import PanContainer from "@/components/PanContainer.vue";
@@ -114,6 +116,7 @@ const offsetX = ref(0);
 const offsetY = ref(0);
 const duration = ref(0);
 const dimmed = ref(0);
+const scrollTop = ref(0);
 
 const previewStyle = computed(() => {
   return {
@@ -126,6 +129,57 @@ const dimmedStyle = computed(() => {
     opacity: dimmed.value,
     transition: `opacity ${duration.value}ms`,
   };
+});
+const padStyle = computed(() => {
+  return {
+    width: `${$q.screen.width * Math.max(0, panContainer.value?.index - 1)}px`,
+    height: `${$q.screen.height}px`,
+  };
+});
+const thumbWidth = computed(() => {
+  return Math.min($q.screen.width, $q.screen.height) / 2;
+});
+const scrollIndex = computed(() => {
+  return Math.floor(scrollTop.value / thumbWidth.value);
+});
+const scrollSize = computed(() => {
+  return Math.ceil($q.screen.height / thumbWidth.value) + 1;
+});
+const scrollStyle = computed(() => {
+  return {
+    paddingTop: `${scrollIndex.value * thumbWidth.value}px`,
+    paddingBottom: `${
+      (imageDataList.value.length / 2 - scrollIndex.value - scrollSize.value) *
+      thumbWidth.value
+    }px`,
+  };
+});
+const virtualThumbList = computed(() => {
+  const length = Math.floor($q.screen.width / thumbWidth.value);
+  return imageDataList.value
+    .slice(
+      scrollIndex.value * length,
+      (scrollIndex.value + scrollSize.value) * length
+    )
+    .map((item, index) => {
+      return {
+        ...item,
+        index: Math.max(0, scrollIndex.value * length) + index,
+      };
+    });
+});
+const virtualImageList = computed(() => {
+  return imageDataList.value
+    .slice(
+      Math.max(0, panContainer.value?.index - 1),
+      panContainer.value?.index + 2
+    )
+    .map((item, index) => {
+      return {
+        ...item,
+        index: Math.max(0, panContainer.value?.index - 1) + index,
+      };
+    });
 });
 
 watch(
@@ -197,9 +251,15 @@ function resizeDispatchHandler(size, key) {
   }
 }
 
+function scrollHandler(scrollValue) {
+  scrollTop.value = scrollValue.position.top;
+}
+
 function togglePreview(key) {
   if (morphing.value) return;
   const temp = showPreview.value;
+  panContainer.value?.setIndex(key);
+  nextTick(() => {
   const { morph } = useMorph({
     from: thumbRef.value[key],
     to: fullRef.value[key],
@@ -222,15 +282,18 @@ function togglePreview(key) {
     },
   });
   morph();
+  });
 }
 
 function resetPinchContainer() {
   pinchContainer.value?.setScaleRatio(1);
   pinchContainer.value?.setOffsetX(0);
   pinchContainer.value?.setOffsetY(0);
+  if (pinchContainerSizeList.value[panContainer.value?.index]) {
   pinchContainer.value?.onContainerResize(
     pinchContainerSizeList.value[panContainer.value?.index]
   );
+  }
   scaleRatio.value = 1;
   offsetX.value = 0;
   offsetY.value = 0;

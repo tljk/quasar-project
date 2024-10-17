@@ -8,13 +8,14 @@
       @resize="panContainer?.onResize"
       @containerResize="panContainer?.onContainerResize"
     >
+      <div :style="padStyle"></div>
       <PinchContainer
-        v-for="(item, key) of imageDataList"
-        :key="key"
+        v-for="item of virtualDataList"
+        :key="item.index"
         composable
         :style="style"
         :pinchStyle="
-          panContainer?.index == key
+          panContainer?.index == item.index
             ? pinchContainer?.pinchStyle
             : defaultPinchStyle
         "
@@ -22,7 +23,7 @@
         @resize="pinchContainer?.onResize"
         @containerResize="
           (size) => {
-            resizeDispatchHandler(size, key);
+            resizeDispatchHandler(size, item.index);
           }
         "
       >
@@ -82,6 +83,25 @@ const style = computed(() => ({
   width: $q.screen.width + "px",
   height: $q.screen.height - offset.value + "px",
 }));
+const padStyle = computed(() => {
+  return {
+    width: `${$q.screen.width * Math.max(0, panContainer.value?.index - 1)}px`,
+    height: `${$q.screen.height}px`,
+  };
+});
+const virtualDataList = computed(() => {
+  return imageDataList.value
+    .slice(
+      Math.max(0, panContainer.value?.index - 1),
+      panContainer.value?.index + 2
+    )
+    .map((item, index) => {
+      return {
+        ...item,
+        index: Math.max(0, panContainer.value?.index - 1) + index,
+      };
+    });
+});
 
 watch(
   () => panContainer.value?.index,
@@ -150,8 +170,10 @@ function resetPinchContainer() {
   pinchContainer.value?.setScaleRatio(1);
   pinchContainer.value?.setOffsetX(0);
   pinchContainer.value?.setOffsetY(0);
+  if (pinchContainerSizeList.value[panContainer.value?.index]) {
   pinchContainer.value?.onContainerResize(
     pinchContainerSizeList.value[panContainer.value?.index]
   );
+  }
 }
 </script>
