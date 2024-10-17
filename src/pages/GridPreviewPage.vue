@@ -1,15 +1,16 @@
 <template>
   <MainLayout title="Grid">
     <div class="flex" :style="scrollStyle">
-      <q-img
+      <img
         v-tap="() => togglePreview(item.index)"
         v-for="item of virtualThumbList"
-        style="width: 50vmin; height: 50vmin"
+        style="width: 50vmin; height: 50vmin; object-fit: cover"
+        loading="lazy"
         :key="item.index"
         :src="item.webPath"
         :ref="
           (el) => {
-            thumbRef[item.index] = el?.$el;
+            thumbRef[item.index] = el;
           }
         "
       />
@@ -145,26 +146,30 @@ const scrollIndex = computed(() => {
 const scrollSize = computed(() => {
   return Math.ceil($q.screen.height / thumbWidth.value) + 1;
 });
+const scrollLength = computed(() => {
+  return Math.floor($q.screen.width / thumbWidth.value);
+});
 const scrollStyle = computed(() => {
   return {
     paddingTop: `${scrollIndex.value * thumbWidth.value}px`,
     paddingBottom: `${
-      (imageDataList.value.length / 2 - scrollIndex.value - scrollSize.value) *
+      (Math.ceil(imageDataList.value.length / scrollLength.value) -
+        scrollIndex.value -
+        scrollSize.value) *
       thumbWidth.value
     }px`,
   };
 });
 const virtualThumbList = computed(() => {
-  const length = Math.floor($q.screen.width / thumbWidth.value);
   return imageDataList.value
     .slice(
-      scrollIndex.value * length,
-      (scrollIndex.value + scrollSize.value) * length
+      scrollIndex.value * scrollLength.value,
+      (scrollIndex.value + scrollSize.value) * scrollLength.value
     )
     .map((item, index) => {
       return {
         ...item,
-        index: Math.max(0, scrollIndex.value * length) + index,
+        index: Math.max(0, scrollIndex.value * scrollLength.value) + index,
       };
     });
 });
