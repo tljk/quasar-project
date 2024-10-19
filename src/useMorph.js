@@ -62,28 +62,31 @@ export function useMorph(props) {
         }px)`,
         willChange: "transform, clip-path",
       });
-      document.body.appendChild(clone);
 
-      clone.addEventListener(
-        "transitionend",
-        () => {
-          onEnd.value();
-          nextTick(() => {
-            clone.parentNode.removeChild(clone);
+      window.requestAnimationFrame(() => {
+        document.body.appendChild(clone);
+
+        clone.addEventListener(
+          "transitionend",
+          () => {
+            onEnd.value();
+            nextTick(() => {
+              clone.parentNode.removeChild(clone);
+            });
+          },
+          { once: true }
+        );
+
+        window.requestAnimationFrame(() => {
+          Object.assign(clone.style, {
+            transform: `translate(${reverse.value ? -offset.x : 0}px, ${
+              reverse.value ? -offset.y : 0
+            }px) scale(${reverse.value ? 1 / scale : 1})`,
+            clipPath: `inset(${reverse.value ? inset.vertical : 0}px ${
+              reverse.value ? inset.horizontal : 0
+            }px)`,
+            transition: `transform ${duration.value}ms, clip-path ${duration.value}ms`,
           });
-        },
-        { once: true }
-      );
-
-      requestAnimationFrame(() => {
-        Object.assign(clone.style, {
-          transform: `translate(${reverse.value ? -offset.x : 0}px, ${
-            reverse.value ? -offset.y : 0
-          }px) scale(${reverse.value ? 1 / scale : 1})`,
-          clipPath: `inset(${reverse.value ? inset.vertical : 0}px ${
-            reverse.value ? inset.horizontal : 0
-          }px)`,
-          transition: `transform ${duration.value}ms, clip-path ${duration.value}ms`,
         });
       });
     });

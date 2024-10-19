@@ -17,7 +17,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
-import { PointerListener } from "@/contactjs/contact";
+import { PointerListener, Tap, Pan, Pinch } from "@/contactjs/contact";
 import { useAppStore } from "@/stores/appStore";
 import { useRouteStore } from "@/stores/routeStore";
 import { checkForUpdates } from "./useBundle.js";
@@ -47,7 +47,19 @@ function replaceName(component, route) {
 }
 
 onMounted(async () => {
-  pointerListener.value = new PointerListener(document.getElementById("q-app"));
+  pointerListener.value = new PointerListener(
+    document.getElementById("q-app"),
+    {
+      supportedGestures: [
+        new Tap(document.getElementById("q-app"), {
+          maxDuration: 200,
+          maxDistance: 5,
+        }),
+        Pan,
+        Pinch,
+      ],
+    }
+  );
 
   $q.dark.set(await (await DarkMode.isDarkMode()).dark);
   document.body.style.setProperty("--q-dark-page", backgroundColor.value);
