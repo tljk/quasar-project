@@ -8,11 +8,12 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const { configure } = require("quasar/wrappers");
-const path = require("path");
-const { version } = require("./package.json");
+import { configure } from "quasar/wrappers";
+import { version } from "./package.json";
+import path from "path";
+import { fileURLToPath } from "node:url";
 
-module.exports = configure(function (ctx) {
+export default configure((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -82,18 +83,13 @@ module.exports = configure(function (ctx) {
 
       vitePlugins: [
         [
-          "@intlify/vite-plugin-vue-i18n",
-          {
-            // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-            // compositionOnly: false,
-
-            // if you want to use named tokens in your Vue I18n messages, such as 'Hello {name}',
-            // you need to set `runtimeOnly: false`
-            // runtimeOnly: false,
-
-            // you need to set i18n resource including paths !
-            include: path.resolve(__dirname, "./src/i18n/**"),
-          },
+          [
+            "@intlify/unplugin-vue-i18n/vite",
+            {
+              include: [fileURLToPath(new URL("./src/i18n", import.meta.url))],
+              ssr: ctx.modeName === "ssr",
+            },
+          ],
         ],
         [
           "vite-plugin-checker",
@@ -140,8 +136,9 @@ module.exports = configure(function (ctx) {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
     //   store: 'src/store/index',
-    //   registerServiceWorker: 'src-pwa/register-service-worker',
-    //   serviceWorker: 'src-pwa/custom-service-worker',
+    //   pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+    //   pwaServiceWorker: 'src-pwa/custom-service-worker',
+    //   pwaManifestFile: 'src-pwa/manifest.json',
     //   pwaManifestFile: 'src-pwa/manifest.json',
     //   electronMain: 'src-electron/electron-main',
     //   electronPreload: 'src-electron/electron-preload'
@@ -178,12 +175,11 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: "injectManifest", // or 'injectManifest'
+      workboxMode: "InjectManifest", // or 'injectManifest'
       injectPwaMetaTags: true,
       swFilename: "sw.js",
       manifestFilename: "manifest.json",
       useCredentialsForManifestTag: false,
-      useFilenameHashes: false,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
       // extendManifestJson (json) {}
