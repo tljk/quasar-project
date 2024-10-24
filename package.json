@@ -36,7 +36,6 @@
     "@ionic/pwa-elements": "^3.3.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
-    "capacitor-choose-video": "^5.0.2",
     "capacitor-video-player": "^6.0.0",
     "capacitor-webview-update": "^0.0.2",
     "ln-capacitor-wifi": "^0.3.0-beta",

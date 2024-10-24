@@ -88,7 +88,6 @@ import { useQuasar } from "quasar";
 import { useAppStore } from "src/stores/appStore";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorVideoPlayer } from "capacitor-video-player";
-import { CapacitorChooseVideo } from "capacitor-choose-video";
 import MainLayout from "@/layouts/MainLayout.vue";
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
@@ -197,32 +196,18 @@ async function onFullScreen() {
 }
 
 async function getVideo() {
-  if (appStore.device.capacitor) {
-    await CapacitorChooseVideo.getVideo()
-      .then(({ path }) => {
-        if (path) {
-          videoList.value.push(path);
-          posterList.value.push("");
-        }
-      })
-      .catch((error) => {
-        $q.notify({
-          message: `Error getting video: ${error.message}`,
-        });
-      });
-  } else {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "video/*";
-    input.onchange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        videoList.value.push(URL.createObjectURL(file));
-        posterList.value.push("");
-      }
-    };
-    input.click();
-  }
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "video/*";
+  input.multiple = true;
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      videoList.value.push(URL.createObjectURL(file));
+      posterList.value.push("");
+    }
+  };
+  input.click();
 }
 
 function onTap() {
