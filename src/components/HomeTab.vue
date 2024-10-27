@@ -21,45 +21,27 @@
     </PanContainer>
     <q-page-sticky position="top" expand>
       <PanTabBar
-        :index="panContainer.index"
+        v-model="panContainer.index"
+        ref="panTabBar"
         :tabList="tabList"
-        :scrollLeft="panTabBar.scrollLeft"
-        :duration="panTabBar.duration"
-        :indicatorStyle="panTabBar.indicatorStyle"
         @click="
           (index) => {
             panContainer.setIndex(index);
             panContainer.setDuration(300);
-            panTabBar.setIndex(index);
           }
         "
-        @change="panTabBar.onChange"
-        @resize="panTabBar.onResize"
       >
-        <q-btn
-          flat
-          dense
-          icon="menu"
-          @click="
-            () => {
-              tabList.push({
-                label: `Label ${Math.pow(10, panContainer.index)}`,
-              });
-            }
-          "
-        />
       </PanTabBar>
     </q-page-sticky>
   </div>
 </template>
 
 <script setup>
-import { ref, toRef, computed } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
 import PanTabBar from "@/components/PanTabBar.vue";
-import { usePanTabBar } from "./usePanTabBar";
 
 const $q = useQuasar();
 const panContainer = ref(
@@ -70,7 +52,7 @@ const panContainer = ref(
     velocityThreshold: 0.3,
   })
 );
-const panTabBar = ref(usePanTabBar(toRef(panContainer.value, "index")));
+const panTabBar = ref();
 const offset = ref();
 const panOption = ref(""); // pan or scroll
 
