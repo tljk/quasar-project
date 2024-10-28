@@ -24,6 +24,7 @@
         v-model="panContainer.index"
         ref="panTabBar"
         :tabList="tabList"
+        padRight="36px"
         @click="
           (index) => {
             panContainer.setIndex(index);
@@ -32,6 +33,13 @@
         "
       >
       </PanTabBar>
+      <q-btn
+        flat
+        dense
+        class="fixed-right dark-mode"
+        icon="menu"
+        @click="() => tabList.push({ label: 'Label' })"
+      ></q-btn>
     </q-page-sticky>
   </div>
 </template>

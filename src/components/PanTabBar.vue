@@ -5,6 +5,10 @@
         class="flex row no-wrap"
         style="width: max-content; min-width: 100vw"
       >
+        <q-space
+          :style="{ minWidth: props.padLeft }"
+          :ref="(el) => el?.$el && (left = dom.width(el.$el))"
+        />
         <q-btn
           v-for="(item, key) in props.tabList"
           flat
@@ -14,24 +18,19 @@
           :label="item.label"
           :class="{
             'text-primary': key == index,
+            [props.class]: true,
           }"
-          :ref="
-            (el) => {
-              if (el?.$el) labelWidth[key] = dom.width(el.$el);
-            }
-          "
+          :ref="(el) => el?.$el && (labelWidth[key] = dom.width(el.$el))"
           @click="onClick(key)"
         >
         </q-btn>
+        <q-space
+          :style="{ minWidth: props.padRight }"
+          :ref="(el) => el?.$el && (right = dom.width(el.$el))"
+        />
       </div>
       <div class="indicator bg-primary" :style="indicatorStyle"></div>
-      <q-resize-observer
-        @resize="
-          (size) => {
-            onResize(size);
-          }
-        "
-      />
+      <q-resize-observer @resize="onResize" />
     </div>
   </div>
 </template>
@@ -45,6 +44,14 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  padLeft: {
+    type: String,
+    default: "0px",
+  },
+  padRight: {
+    type: String,
+    default: "0px",
+  },
 });
 const index = defineModel({ default: 0 });
 const emit = defineEmits(["click"]);
@@ -55,15 +62,23 @@ const offset = ref(0);
 const duration = ref(0);
 const labelWidth = ref({});
 const padStyle = ref({});
+const left = ref(0);
+const right = ref(0);
 
 const fullWidth = computed(() => {
-  return Object.values(labelWidth.value).reduce((acc, cur) => acc + cur, 0);
+  return (
+    Object.values(labelWidth.value).reduce((acc, cur) => acc + cur, 0) +
+    left.value +
+    right.value
+  );
 });
 const distance = computed(() => {
-  return Array.from(
-    { length: index.value },
-    (_, i) => labelWidth.value[i]
-  ).reduce((acc, cur) => acc + cur, 0);
+  return (
+    Array.from({ length: index.value }, (_, i) => labelWidth.value[i]).reduce(
+      (acc, cur) => acc + cur,
+      0
+    ) + left.value
+  );
 });
 const indicatorStyle = computed(() => {
   return {
@@ -84,7 +99,13 @@ function handlePan(e) {
     distance.value -
     (e.detail.global.deltaX / width.value) * labelWidth.value[index.value];
 
-  if (temp > 0 && temp < fullWidth.value - labelWidth.value[index.value]) {
+  if (
+    temp > 0 &&
+    temp <
+      fullWidth.value -
+        labelWidth.value[index.value] -
+        labelWidth.value[props.tabList.length]
+  ) {
     offset.value = temp;
     if (
       scrollLeft.value > labelWidth.value[index.value] &&
@@ -168,6 +189,7 @@ function setDuration(durationValue) {
 }
 
 onActivated(() => {
+  setIndex();
   scroll.setHorizontalScrollPosition(scrollContainer.value, scrollLeft.value);
 });
 
