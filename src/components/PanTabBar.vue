@@ -100,11 +100,8 @@ function handlePan(e) {
     (e.detail.global.deltaX / width.value) * labelWidth.value[index.value];
 
   if (
-    temp > 0 &&
-    temp <
-      fullWidth.value -
-        labelWidth.value[index.value] -
-        labelWidth.value[props.tabList.length]
+    temp > left.value &&
+    temp < fullWidth.value - labelWidth.value[index.value] - right.value
   ) {
     offset.value = temp;
     if (
