@@ -55,6 +55,11 @@
             label="Redirect to ufo test"
             @click="openWebView('https://www.testufo.com/')"
           />
+          <q-btn
+            flat
+            label="Redirect to speedometer test"
+            @click="openWebView('https://browserbench.org/Speedometer3.0')"
+          />
         </q-card-actions>
       </q-card>
     </div>
