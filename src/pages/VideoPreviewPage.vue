@@ -40,7 +40,7 @@
               "
             >
               <video
-                class="full fit-cover block no-pointer-events"
+                class="full fit-cover block"
                 preload
                 :loop="loop"
                 :muted="muted"
@@ -83,11 +83,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
-import { useAppStore } from "src/stores/appStore";
 import { Capacitor } from "@capacitor/core";
-import { CapacitorVideoPlayer } from "capacitor-video-player";
 import MainLayout from "@/layouts/MainLayout.vue";
 import PanContainer from "@/components/PanContainer.vue";
 import { usePanContainer } from "@/components/usePanContainer";
@@ -95,7 +93,6 @@ import PinchContainer from "@/components/PinchContainer.vue";
 import { usePinchContainer } from "@/components/usePinchContainer";
 
 const $q = useQuasar();
-const appStore = useAppStore();
 const panContainer = ref(
   usePanContainer({
     index: 0,
@@ -138,11 +135,6 @@ const virtualVideoList = computed(() => {
     });
 });
 const videoRef = ref({});
-const playerOptions = ref({
-  playerId: "player",
-  componentTag: "div",
-  mode: "fullscreen",
-});
 const style = computed(() => ({
   width: $q.screen.width + "px",
   height: $q.screen.height - offset.value + "px",
@@ -178,36 +170,28 @@ watch(
   }
 );
 
-async function onFullScreen() {
-  fullScreen.value = !fullScreen.value;
-  if (fullScreen.value) {
-    videoRef.value[panContainer.value?.index]?.pause();
-    await CapacitorVideoPlayer.initPlayer(
-      Object.assign(playerOptions.value, {
-        url: videoList.value[panContainer.value?.index],
-        poster: posterList.value[panContainer.value?.index],
-      })
-    ).catch((error) => {
-      $q.notify({
-        message: `Error initializing player: ${error.message}`,
-      });
-    });
-  }
-}
-
 async function getVideo() {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "video/*";
   input.multiple = true;
   input.onchange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = Array.from(event.target.files);
+    files.forEach((file) => {
       videoList.value.push(URL.createObjectURL(file));
       posterList.value.push("");
-    }
+    });
   };
   input.click();
+}
+
+function loadVideo() {}
+
+async function onFullScreen() {
+  const video = videoRef.value[panContainer.value?.index];
+  if (video) {
+    video.requestFullscreen();
+  }
 }
 
 function onTap() {
@@ -216,8 +200,6 @@ function onTap() {
     video.paused ? video.play() : video.pause();
   }
 }
-
-function loadVideo() {}
 
 function panDispatchHandler(event) {
   if (pinching.value) return;
@@ -273,10 +255,4 @@ function resetPinchContainer() {
     );
   }
 }
-
-onMounted(async () => {
-  CapacitorVideoPlayer.addListener("jeepCapVideoPlayerExit", () => {
-    fullScreen.value = false;
-  });
-});
 </script>

@@ -36,7 +36,6 @@
     "@ionic/pwa-elements": "^3.3.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
-    "capacitor-video-player": "^6.0.0",
     "capacitor-webview-update": "^0.0.2",
     "ln-capacitor-wifi": "^0.3.0-beta",
     "pinia": "^2.0.11",
@@ -48,7 +47,7 @@
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^5.2.0",
-    "@quasar/app-vite": "^2.0.0-beta.1",
+    "@quasar/app-vite": "^2.0.0",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.1.0",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.57.0",
