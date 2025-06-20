@@ -1,5 +1,18 @@
 <template>
   <MainLayout title="Video">
+    <template #dropdown-content>
+      <q-list>
+        <q-item clickable @click="getVideo">
+          <q-item-section> Add Videos </q-item-section>
+        </q-item>
+        <q-item clickable @click="onFullScreen">
+          <q-item-section> Full Screen </q-item-section>
+        </q-item>
+        <q-item clickable @click="muted = !muted">
+          <q-item-section> {{ muted ? "Unmute" : "Mute" }} </q-item-section>
+        </q-item>
+      </q-list>
+    </template>
     <template #page>
       <q-page-container class="full">
         <q-page
@@ -57,25 +70,14 @@
 
           <div id="player" class="full fit"></div>
 
-          <q-page-sticky position="bottom-right" :offset="[18, 18]">
-            <q-fab color="primary" icon="keyboard_arrow_up" direction="up">
-              <q-fab-action
-                color="secondary"
-                icon="add_a_photo"
-                @click.stop="getVideo"
-              />
-              <q-fab-action
-                color="secondary"
-                icon="fullscreen"
-                @click.stop="onFullScreen"
-              />
-              <q-fab-action
-                color="secondary"
-                icon="music_off"
-                @click.stop="muted = !muted"
-              />
-            </q-fab>
-          </q-page-sticky>
+          <input
+            type="file"
+            id="videoInput"
+            multiple
+            accept="video/*"
+            style="display: none"
+            @change="onChange"
+          />
         </q-page>
       </q-page-container>
     </template>
@@ -116,7 +118,6 @@ const panOption = ref(false);
 const pinching = ref(false);
 const muted = ref(true);
 const loop = ref(true);
-const fullScreen = ref(false);
 const offset = ref(0);
 const videoList = ref([]);
 const posterList = ref([]);
@@ -170,18 +171,16 @@ watch(
   }
 );
 
+async function onChange(event) {
+  const files = Array.from(event.target.files);
+  files.forEach((file) => {
+    videoList.value.push(URL.createObjectURL(file));
+    posterList.value.push("");
+  });
+}
+
 async function getVideo() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "video/*";
-  input.multiple = true;
-  input.onchange = (event) => {
-    const files = Array.from(event.target.files);
-    files.forEach((file) => {
-      videoList.value.push(URL.createObjectURL(file));
-      posterList.value.push("");
-    });
-  };
+  const input = document.getElementById("videoInput");
   input.click();
 }
 

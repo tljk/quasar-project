@@ -6,7 +6,14 @@
           <q-btn flat round icon="arrow_back" @click="back" />
           <q-toolbar-title> {{ props.title }} </q-toolbar-title>
           <q-space />
-          <q-btn flat round icon="more_vert" to="/detail" />
+          <q-btn-dropdown
+            flat
+            round
+            no-icon-animation
+            dropdown-icon="more_vert"
+          >
+            <slot name="dropdown-content"></slot>
+          </q-btn-dropdown>
         </q-toolbar>
       </q-header>
     </slot>
