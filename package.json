@@ -16,9 +16,9 @@
     "build": "quasar build",
     "build:pwa": "quasar build -m pwa",
     "build:android": "quasar build -m capacitor -T android --ide",
-    "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
-    "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
-    "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json",
+    "patch": "bump patch -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json src-capacitor/android/app/build.gradle",
+    "minor": "bump minor -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json src-capacitor/android/app/build.gradle",
+    "major": "bump major -t -a -p package.json package-lock.json src-capacitor/package.json src-capacitor/package-lock.json src-capacitor/android/app/build.gradle",
     "version": "npm install && cd src-capacitor && npm install && cd ..",
     "test:unit": "vitest",
     "test:unit:ci": "vitest run"
