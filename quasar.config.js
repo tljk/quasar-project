@@ -65,7 +65,7 @@ export default configure((ctx) => {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: "/quasar-project",
+      publicPath: ctx.dev ? "/" : "/quasar-project",
       // analyze: true,
       env: {
         APP_VERSION: version,
@@ -95,7 +95,7 @@ export default configure((ctx) => {
           "vite-plugin-checker",
           {
             eslint: {
-              lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"',
+              lintCommand: 'eslint "./src/*.{js,mjs,cjs,vue}"',
             },
           },
           { server: false },
