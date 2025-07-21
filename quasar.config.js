@@ -27,7 +27,9 @@ export default configure((ctx) => {
       "dark-mode",
       "addressbar-color",
       "pwa-elements",
-      "contact",
+      "gesture",
+      "fullscreen",
+      "live-update",
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

@@ -1,36 +1,50 @@
 <template>
   <MainLayout title="Pinch" v-model="offset">
-    <PinchContainer
-      composable
-      :style="style"
-      :pinchStyle="pinchStyle"
-      @pinch="handlePinch"
-      @pan="handlePan"
-      @resize="onResize"
-      @containerResize="onContainerResize"
-    >
-      <img
-        class="full fit-cover block no-pointer-events"
-        loading="lazy"
-        src="https://cdn.quasar.dev/img/parallax2.jpg"
-      />
-    </PinchContainer>
+    <template #gesture>
+      <InteractiveContainer
+        ref="zoomContainerRef"
+        class="flex"
+        :style="style"
+        @dragEnd="onDragEnd"
+        @pinchEnd="onPinchEnd"
+      >
+        <img
+          v-gesture:drag:pinch
+          class="full block"
+          loading="lazy"
+          src="../assets/parallax2.jpg"
+        />
+      </InteractiveContainer>
+    </template>
   </MainLayout>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
-import PinchContainer from "@/components/PinchContainer.vue";
-import { usePinchContainer } from "@/components/usePinchContainer";
+import InteractiveContainer from "@/components/InteractiveContainer.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 
-const $q = useQuasar();
-const { pinchStyle, handlePinch, handlePan, onResize, onContainerResize } =
-  usePinchContainer({ maxScaleRatio: 10, minScaleRatio: 0.1 });
+const zoomContainerRef = ref();
 const offset = ref();
+const $q = useQuasar();
+
 const style = computed(() => ({
   width: $q.screen.width + "px",
   height: $q.screen.height - offset.value + "px",
 }));
+const transform = computed(() => zoomContainerRef.value?.transform);
+const animate = computed(() => zoomContainerRef.value?.animate);
+
+const onDragEnd = () => {
+  if (transform.value.scaleX <= 1) {
+    animate.value("bounce", 1, 0, 0, 300, "replace");
+  }
+};
+
+const onPinchEnd = () => {
+  if (transform.value.scaleX <= 1) {
+    animate.value("bounce", 1, 0, 0, 300, "replace");
+  }
+};
 </script>

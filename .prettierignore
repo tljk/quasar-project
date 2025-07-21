@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.quasar/
+.github/
+src-capacitor/
+src-pwa/
+index.html

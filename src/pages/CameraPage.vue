@@ -1,119 +1,108 @@
 <template>
   <MainLayout title="Camera" v-model="offset">
-    <PanContainer
-      class="full"
-      composable
-      :panStyle="panContainer?.panStyle"
-      @pan="panDispatchHandler"
-      @resize="panContainer?.onResize"
-      @containerResize="panContainer?.onContainerResize"
-    >
-      <div :style="padStyle"></div>
-      <PinchContainer
-        v-for="item of virtualDataList"
-        :key="item.index"
-        composable
+    <template #dropdown-content>
+      <q-list>
+        <q-item clickable @click="takePicture">
+          <q-item-section> Take Picture </q-item-section>
+        </q-item>
+      </q-list>
+    </template>
+    <template #gesture>
+      <InteractiveContainer
+        ref="panContainerRef"
         :style="style"
-        :pinchStyle="
-          panContainer?.index == item.index
-            ? pinchContainer?.pinchStyle
-            : defaultPinchStyle
-        "
-        @pinch="pinchDispatchHandler"
-        @resize="pinchContainer?.onResize"
-        @containerResize="
-          (size) => {
-            resizeDispatchHandler(size, item.index);
-          }
-        "
+        :alignCenter="false"
+        :scaleOnPinch="false"
+        @dragEnd="onPanDragEnd"
+        @pinchEnd="onPanPinchEnd"
+        @containerResize="onPanContainerResize"
+        @wrapperResize="onPanWrapperResize"
       >
-        <img
-          class="full fit-cover block no-pointer-events"
-          loading="lazy"
-          :src="item.webPath"
-        />
-      </PinchContainer>
-    </PanContainer>
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add_a_photo" color="primary" @click.stop="takePicture" />
-    </q-page-sticky>
+        <div
+          v-gesture:drag:pinch
+          class="full-content flex no-wrap"
+          :class="{ column: vertical, row: !vertical }"
+        >
+          <div :style="padStyle"></div>
+          <InteractiveContainer
+            v-for="(item, index) in virtualImageList"
+            :key="item.webPath"
+            :ref="
+              (element) => {
+                if (element && index === virtualIndex)
+                  zoomContainerRef = element;
+              }
+            "
+            :style="style"
+            class="flex"
+            @dragEnd="onZoomDragEnd"
+            @pinchEnd="onZoomPinchEnd"
+            @reachBoundary="onZoomReachBoundary"
+          >
+            <img
+              v-gesture:drag:pinch
+              class="full block"
+              loading="lazy"
+              :src="item.webPath"
+            />
+          </InteractiveContainer>
+        </div>
+      </InteractiveContainer>
+    </template>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import PanContainer from "@/components/PanContainer.vue";
-import PinchContainer from "@/components/PinchContainer.vue";
-import { usePanContainer } from "@/components/usePanContainer";
-import { usePinchContainer } from "@/components/usePinchContainer";
+import InteractiveContainer from "@/components/InteractiveContainer.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 
+const panContainerRef = ref();
+const zoomContainerRef = ref();
+const offset = ref();
 const $q = useQuasar();
-const panContainer = ref(
-  usePanContainer({
-    index: 0,
-    vertical: false,
-    distanceThreshold: 0.6,
-    velocityThreshold: 0.3,
-  })
-);
-const imageDataList = ref([]);
+
+const index = ref(0);
+const containerLength = ref(0);
+const screenLength = ref(0);
+const vertical = false;
+const distanceThreshold = 0.25;
+const velocityThreshold = 0.3;
+const baseDuration = 300;
+const imageList = ref([]);
 const cameraOptions = ref({
   quality: 90,
   direction: "REAR",
   resultType: CameraResultType.Uri,
 });
-const pinchContainer = ref(
-  usePinchContainer({
-    maxScaleRatio: 10,
-    minScaleRatio: 0.1,
-  })
-);
-const pinchContainerSizeList = ref({});
-const defaultPinchStyle = ref({
-  transform: "scale(1) translate(0px, 0px)",
-  transition: "transform 0.3s",
-});
-const panOption = ref(false);
-const pinching = ref(false);
-const offset = ref();
+
 const style = computed(() => ({
   width: $q.screen.width + "px",
   height: $q.screen.height - offset.value + "px",
 }));
 const padStyle = computed(() => {
   return {
-    width: `${$q.screen.width * Math.max(0, panContainer.value?.index - 1)}px`,
+    width: `${$q.screen.width * Math.max(0, index.value - 1)}px`,
     height: `${$q.screen.height}px`,
   };
 });
-const virtualDataList = computed(() => {
-  return imageDataList.value
-    .slice(
-      Math.max(0, panContainer.value?.index - 1),
-      panContainer.value?.index + 2
-    )
-    .map((item, index) => {
-      return {
-        ...item,
-        index: Math.max(0, panContainer.value?.index - 1) + index,
-      };
-    });
-});
-
-watch(
-  () => panContainer.value?.index,
-  () => {
-    resetPinchContainer();
-  }
+const virtualIndex = computed(() => Math.min(1, index.value));
+const virtualImageList = computed(() =>
+  imageList.value.slice(Math.max(0, index.value - 1), index.value + 2)
 );
+const transformPan = computed(() => panContainerRef.value?.transform);
+const animatePan = computed(() => panContainerRef.value?.animate);
+const screenDistance = computed(() => -index.value * screenLength.value);
+const maxIndex = computed(() => containerLength.value / screenLength.value - 1);
+const transformZoom = computed(() => zoomContainerRef.value?.transform);
+const animateZoom = computed(() => zoomContainerRef.value?.animate);
 
 async function takePicture() {
   await Camera.getPhoto(cameraOptions.value)
     .then((image) => {
-      imageDataList.value.push(image);
+      imageList.value.push(image);
     })
     .catch((error) => {
       $q.notify({
@@ -122,58 +111,90 @@ async function takePicture() {
     });
 }
 
-function panDispatchHandler(event) {
-  if (pinching.value) return;
-  const borderReached = pinchContainer.value?.borderReached;
-  if (borderReached && event.type == "panstart") {
-    if (
-      (borderReached.top && event.detail.live.direction == "down") ||
-      (borderReached.bottom && event.detail.live.direction == "up") ||
-      (borderReached.left && event.detail.live.direction == "right") ||
-      (borderReached.right && event.detail.live.direction == "left")
-    ) {
-      panOption.value = true;
-    } else {
-      panOption.value = false;
+const getAnimationDuration = (state) => {
+  const directionalDistance = vertical ? state.distanceY : state.distanceX;
+  if (
+    state.distance > screenLength.value * distanceThreshold ||
+    state.velocity > velocityThreshold
+  ) {
+    if (directionalDistance > 10) {
+      index.value = Math.ceil(
+        -transformPan.value.translateX / screenLength.value
+      );
+    } else if (directionalDistance < -10) {
+      index.value = Math.floor(
+        -transformPan.value.translateX / screenLength.value
+      );
     }
   }
+  index.value = Math.min(Math.max(index.value, 0), maxIndex.value);
 
-  if (panOption.value) {
-    panContainer.value?.handlePan(event);
-  } else {
-    pinchContainer.value?.handlePan(event);
+  const directionalVelocity = vertical ? state.velocityY : state.velocityX;
+  const duration =
+    baseDuration * (1 - 0.5 * Math.min(Math.abs(directionalVelocity) / 1.5, 1));
+  return duration;
+};
+
+const onPanDragEnd = (event) => {
+  const duration = getAnimationDuration(event.detail.state);
+  const [x, y] = vertical
+    ? [0, screenDistance.value]
+    : [screenDistance.value, 0];
+  animatePan.value("bounce", 1, x, y, duration, "replace");
+};
+
+const onPanPinchEnd = (event) => {
+  const duration = getAnimationDuration(event.detail.state);
+  const [x, y] = vertical
+    ? [0, screenDistance.value]
+    : [screenDistance.value, 0];
+  animatePan.value("bounce", 1, x, y, duration, "replace");
+};
+
+const onPanContainerResize = (size) => {
+  containerLength.value = vertical ? size.height : size.width;
+};
+
+const onPanWrapperResize = (size) => {
+  screenLength.value = vertical ? size.height : size.width;
+  const [x, y] = vertical
+    ? [0, screenDistance.value]
+    : [screenDistance.value, 0];
+  animatePan.value("bounce", 1, x, y, 0, "replace");
+};
+
+const onZoomDragEnd = () => {
+  if (transformZoom.value.scaleX <= 1) {
+    animateZoom.value("bounce", 1, 0, 0, baseDuration, "replace");
   }
 
-  if (event.type == "panend") {
-    panOption.value = false;
-  }
-}
+  const [x, y] = vertical
+    ? [0, screenDistance.value]
+    : [screenDistance.value, 0];
+  animatePan.value("bounce", 1, x, y, baseDuration, "replace");
+};
 
-function pinchDispatchHandler(event) {
-  if (event.type == "pinchstart") {
-    pinching.value = true;
+const onZoomPinchEnd = () => {
+  if (transformZoom.value.scaleX <= 1) {
+    animateZoom.value("bounce", 1, 0, 0, baseDuration, "replace");
   }
-  pinchContainer.value?.handlePinch(event);
-  if (event.type == "pinchend") {
-    pinching.value = false;
-  }
-}
 
-function resizeDispatchHandler(size, key) {
-  pinchContainerSizeList.value[key] = size;
-  if (key == panContainer.value?.index) {
-    pinchContainer.value?.onContainerResize(size);
-  }
-}
+  const [x, y] = vertical
+    ? [0, screenDistance.value]
+    : [screenDistance.value, 0];
+  animatePan.value("bounce", 1, x, y, baseDuration, "replace");
+};
 
-function resetPinchContainer() {
-  pinchContainer.value?.setScaleRatio(1);
-  pinchContainer.value?.setOffsetX(0);
-  pinchContainer.value?.setOffsetY(0);
-  if (pinchContainerSizeList.value[panContainer.value?.index]) {
-  pinchContainer.value?.onContainerResize(
-    pinchContainerSizeList.value[panContainer.value?.index]
-  );
+const onZoomReachBoundary = (bounded, event) => {
+  if (!panContainerRef.value) return;
+
+  if (bounded.get("translateX")) {
+    const gestureEvent = new CustomEvent(event.type, {
+      detail: event.detail,
+      bubbles: true,
+      cancelable: true,
+    });
+    panContainerRef.value.container.dispatchEvent(gestureEvent);
   }
-}
+};
 </script>

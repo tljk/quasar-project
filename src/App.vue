@@ -15,29 +15,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useQuasar } from "quasar";
-import { PointerListener, Tap, Pan, Pinch } from "@/contactjs/contact";
-import { useAppStore } from "@/stores/appStore";
 import { useRouteStore } from "@/stores/routeStore";
-import { checkForUpdates } from "./useBundle.js";
-import { DarkMode } from "@aparajita/capacitor-dark-mode";
-import { LiveUpdate } from "@capawesome/capacitor-live-update";
-import { Network } from "@capacitor/network";
 
-const $q = useQuasar();
-const appStore = useAppStore();
 const routeStore = useRouteStore();
-const appearanceListenerHandle = ref();
-const networkListenerHandle = ref();
-const pointerListener = ref();
-
-const lightBackground = "#f4f4f4";
-const darkBackground = "#121212";
-
-const backgroundColor = computed(() =>
-  $q.dark.isActive ? darkBackground : lightBackground
-);
 
 function replaceName(component, route) {
   if (component) {
@@ -45,45 +25,4 @@ function replaceName(component, route) {
     return component;
   }
 }
-
-onMounted(async () => {
-  pointerListener.value = new PointerListener(
-    document.getElementById("q-app"),
-    {
-      supportedGestures: [
-        new Tap(document.getElementById("q-app"), {
-          maxDuration: 200,
-          maxDistance: 5,
-        }),
-        Pan,
-        Pinch,
-      ],
-    }
-  );
-
-  $q.dark.set(await (await DarkMode.isDarkMode()).dark);
-  document.body.style.setProperty("--q-dark-page", backgroundColor.value);
-  appearanceListenerHandle.value = await DarkMode.addAppearanceListener(
-    (value) => {
-      $q.dark.set(value.dark);
-      document.body.style.setProperty("--q-dark-page", backgroundColor.value);
-    }
-  );
-
-  appStore.setNetworkStatus(await Network.getStatus());
-  networkListenerHandle.value = Network.addListener(
-    "networkStatusChange",
-    (status) => {
-      appStore.setNetworkStatus(status);
-    }
-  );
-
-  if (appStore.device?.capacitor) {
-    await LiveUpdate.ready();
-
-    appStore.setCurrentBundleId((await LiveUpdate.getBundle()).bundleId);
-
-    checkForUpdates(appStore.networkStatus?.connectionType == "wifi");
-  }
-});
 </script>

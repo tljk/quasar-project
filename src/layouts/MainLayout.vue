@@ -24,6 +24,12 @@
       </q-page>
     </q-page-container>
 
+    <q-page-container class="full" v-if="$slots.gesture">
+      <q-page class="full dark-mode no-scroll" :style-fn="styleFn">
+        <slot name="gesture"> </slot>
+      </q-page>
+    </q-page-container>
+
     <slot name="page"> </slot>
 
     <slot name="footer"> </slot>

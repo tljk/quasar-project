@@ -9,6 +9,25 @@ body {
   max-height: 100vh;
 }
 
+.full-content {
+  width: fit-content;
+  height: fit-content;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+:root {
+  --q-dark-page: #f4f4f4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --q-dark-page: #121212;
+  }
+}
+
 .dark-mode {
   background: var(--q-dark-page);
 }
